@@ -1,5 +1,6 @@
 # yxr_flutter_basic
 Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封装了实用的基础类和工具类，可以帮助开发者快速完成Flutter项目开发。项目适用于Android、iOS、web三端，macOs、windows暂未测试。
+[Demo地址](https://github.com/yxr2222222/FlutterDemo)
 
 ## 集成说明
 1. 项目pubspec.yaml文件中加入依赖
