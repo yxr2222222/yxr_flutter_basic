@@ -8,7 +8,10 @@ import '../../vm/BaseMultiVM.dart';
 import 'BasePage.dart';
 
 abstract class BaseMultiPage<VM extends BaseMultiVM> extends BasePage<VM> {
-  BaseMultiPage({super.key, required super.viewModel});
+  final double appbarHeight;
+
+  BaseMultiPage(
+      {super.key, required super.viewModel, this.appbarHeight = 56.0});
 }
 
 abstract class BaseMultiPageState<VM extends BaseMultiVM,
@@ -18,7 +21,8 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
   @override
   Widget createContentWidget(BuildContext context, VM viewModel) => Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size(MediaQuery.of(context).size.width, 56.0),
+        preferredSize:
+            Size(MediaQuery.of(context).size.width, widget.appbarHeight),
         child: createAppBar(context, viewModel),
       ),
       body: Container(
@@ -52,6 +56,8 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
   Widget createAppBar(BuildContext context, VM viewModel) {
     return GetBuilderUtil.builder<AppbarController>(
         (controller) => AppBar(
+              // 禁止appbar因为滚动控件滚动导致的背景颜色变化
+              flexibleSpace: null,
               leading: GestureDetector(
                 onTap: () {
                   viewModel.onBackPressed();
