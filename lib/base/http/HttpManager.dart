@@ -16,6 +16,7 @@ import 'cache/CacheManager.dart';
 import 'exception/CstException.dart';
 import 'model/BaseRespConfig.dart';
 import 'model/ReqType.dart';
+
 // UnuseJs这个完成是为了过非Web端的编译
 import '../unuse/UnuseJs.dart' if (dart.library.js) 'dart:js' as js;
 
@@ -56,7 +57,6 @@ class HttpManager {
       Map<String, dynamic>? publicQueryParams,
       CacheConfig? cacheConfig,
       List<Interceptor>? interceptors}) async {
-
     WidgetsFlutterBinding.ensureInitialized();
 
     // 初始化k-v持久化存储
@@ -155,57 +155,82 @@ class HttpManager {
     String? customCacheKey,
   }) async {
     try {
-      Options option = _copyOptions(options,
+      Response<dynamic> response = await requestResponse<dynamic>(
+          path: path,
+          reqType: reqType,
+          params: params,
+          options: options,
+          body: body,
+          cancelToken: cancelToken,
+          respConfig: respConfig,
           cacheMode: cacheMode,
           cacheTime: cacheTime,
           customCacheKey: customCacheKey);
 
-      Future<Response<dynamic>> future;
-      switch (reqType) {
-        case ReqType.post:
-          {
-            future = _dio.post(path,
-                data: body,
-                queryParameters: params,
-                options: option,
-                cancelToken: cancelToken);
-            break;
-          }
-        case ReqType.put:
-          {
-            future = _dio.put(path,
-                data: body,
-                queryParameters: params,
-                options: option,
-                cancelToken: cancelToken);
-            break;
-          }
-        case ReqType.delete:
-          {
-            future = _dio.delete(path,
-                data: body,
-                queryParameters: params,
-                options: option,
-                cancelToken: cancelToken);
-            break;
-          }
-        default:
-          {
-            future = _dio.get(path,
-                queryParameters: params,
-                options: option,
-                cancelToken: cancelToken);
-          }
-      }
-
-      Response response = await future;
       return _parseResponse(response, respConfig, onFromJson);
     } on Exception catch (e) {
       return BaseResp(false, error: CstException.buildException(e));
     } on Error catch (e) {
-      return BaseResp(false,
-          error: CstException.buildException(Exception(e)));
+      return BaseResp(false, error: CstException.buildException(Exception(e)));
     }
+  }
+
+  /// 需要异步调用的网络请求
+  Future<Response<T>> requestResponse<T>({
+    required String path,
+    ReqType reqType = ReqType.get,
+    Map<String, dynamic>? params,
+    Options? options,
+    Object? body,
+    CancelToken? cancelToken,
+    BaseRespConfig? respConfig,
+    CacheMode? cacheMode = CacheMode.ONLY_NETWORK,
+    int? cacheTime,
+    String? customCacheKey,
+  }) async {
+    Options option = _copyOptions(options,
+        cacheMode: cacheMode,
+        cacheTime: cacheTime,
+        customCacheKey: customCacheKey);
+
+    Future<Response<T>> future;
+    switch (reqType) {
+      case ReqType.post:
+        {
+          future = _dio.post(path,
+              data: body,
+              queryParameters: params,
+              options: option,
+              cancelToken: cancelToken);
+          break;
+        }
+      case ReqType.put:
+        {
+          future = _dio.put(path,
+              data: body,
+              queryParameters: params,
+              options: option,
+              cancelToken: cancelToken);
+          break;
+        }
+      case ReqType.delete:
+        {
+          future = _dio.delete(path,
+              data: body,
+              queryParameters: params,
+              options: option,
+              cancelToken: cancelToken);
+          break;
+        }
+      default:
+        {
+          future = _dio.get(path,
+              queryParameters: params,
+              options: option,
+              cancelToken: cancelToken);
+        }
+    }
+    return future;
   }
 
   /// 回调方式调用的网络请求
@@ -350,8 +375,7 @@ class HttpManager {
     }
 
     if (code != successCode) {
-      return BaseResp(false,
-          error: CstException(code, msg ?? "业务错误码不等于业务成功码"));
+      return BaseResp(false, error: CstException(code, msg ?? "业务错误码不等于业务成功码"));
     }
 
     return BaseResp(true, data: data);

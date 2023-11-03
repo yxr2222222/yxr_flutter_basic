@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:yxr_flutter_basic/base/extension/BuildContextExtension.dart';
+import 'package:yxr_flutter_basic/base/extension/ObjectExtension.dart';
 import 'package:yxr_flutter_basic/base/extension/StringExtension.dart';
 import 'package:yxr_flutter_basic/base/ui/page/BasePage.dart';
 import 'package:yxr_flutter_basic/base/ui/page/SimpleWebPage.dart';
@@ -17,6 +18,7 @@ class SimpleSplashPage extends BasePage<_SimpleSplashVM> {
   final String? icon;
   final String? title;
   final Widget? child;
+  final bool webClientAutoAgree;
 
   /// 简易的开屏页
   /// [privacyContent] 隐私政策相关内容
@@ -24,13 +26,15 @@ class SimpleSplashPage extends BasePage<_SimpleSplashVM> {
   /// [icon] 欢迎页面的icon，可以不传，不传则不会有此控件
   /// [title] 欢迎页面的title，可以不传，不传则不会有此控件
   /// [child] 欢迎页面的自定义控件，在只有icon和title无法满足的情况下可传入自定义的子控件
+  /// [webClientAutoAgree] web平台一般不需要这个隐私政策弹框，是否自动就完成通过的校验
   SimpleSplashPage(
       {super.key,
       required this.privacyContent,
       required this.onPrivacyAgree,
       this.icon,
       this.title,
-      this.child})
+      this.child,
+      this.webClientAutoAgree = true})
       : super(viewModel: _SimpleSplashVM());
 
   @override
@@ -156,12 +160,17 @@ class _SimpleSplashVM extends BaseVM {
   @override
   void onCreate() async {
     super.onCreate();
-    var isAgreePrivacy =
-        await StorageUtil.get<bool>(PublicKeyConfig.KEY_IS_AGREE_PRIVACY);
-    if (isAgreePrivacy == true) {
+    if (isWeb()) {
+      await StorageUtil.put(PublicKeyConfig.KEY_IS_AGREE_PRIVACY, true);
       _onPrivacyAgree();
-    } else if (onShowPrivacyDialog != null) {
-      onShowPrivacyDialog!();
+    } else {
+      var isAgreePrivacy =
+          await StorageUtil.get<bool>(PublicKeyConfig.KEY_IS_AGREE_PRIVACY);
+      if (isAgreePrivacy == true) {
+        _onPrivacyAgree();
+      } else if (onShowPrivacyDialog != null) {
+        onShowPrivacyDialog!();
+      }
     }
   }
 
