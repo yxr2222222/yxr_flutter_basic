@@ -1,6 +1,7 @@
 name: yxr_flutter_basic
 description: on flutter basic package.
-version: 0.0.1
+version: 0.0.3
+homepage: https://github.com/yxr2222222/yxr_flutter_basic
 
 environment:
   sdk: '>=3.1.4 <4.0.0'
@@ -47,4 +48,4 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - lib/images/
+    - packages/yxr_flutter_basic/images/

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:yxr_flutter_basic/base/extension/ObjectExtension.dart';
+import 'package:yxr_flutter_basic/base/extension/StringExtension.dart';
+import 'package:yxr_flutter_basic/base/ui/page/SimpleWebPage.dart';
 import 'package:yxr_flutter_basic/base/util/Log.dart';
 
 extension BuildContextExtension on BuildContext {
@@ -35,6 +38,19 @@ extension BuildContextExtension on BuildContext {
       }
     }
     return null;
+  }
+
+  /// 跳转到默认的简易Web界面
+  /// [url] 需要加载的url地址
+  /// [title] appbar的标题
+  /// [webClientIframe] 如果是web端是否是用内置iframe展示，默认为false
+  void pushSimpleWeb(
+      {required String url, String? title, bool webClientIframe = false}) {
+    if (!webClientIframe && isWeb()) {
+      url.launch();
+    } else {
+      push(SimpleWebPage(url: url, title: title));
+    }
   }
 
   /// 当前context是否可用（mounted）

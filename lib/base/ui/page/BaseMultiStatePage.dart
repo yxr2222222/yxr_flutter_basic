@@ -116,7 +116,7 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Image.asset(
-            'lib/images/status_default_nonetwork.png',
+            'packages/yxr_flutter_basic/images/status_default_nonetwork.png',
             width: 144,
             height: 115,
             fit: BoxFit.cover,
@@ -161,7 +161,7 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Image.asset(
-            'lib/images/status_default_empty.png',
+            'packages/yxr_flutter_basic/images/status_default_empty.png',
             width: 180,
             height: 180,
             fit: BoxFit.cover,
