@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:yxr_flutter_basic/base/extension/ObjectExtension.dart';
+import 'package:yxr_flutter_basic/base/extension/StringExtension.dart';
 import 'package:yxr_flutter_basic/base/http/cache/CacheMode.dart';
 import 'package:yxr_flutter_basic/base/http/cache/CacheStrategy.dart';
 import 'package:yxr_flutter_basic/base/http/interceptor/LoggingInterceptor.dart';
@@ -321,13 +322,13 @@ class HttpManager {
   }
 
   /// 解析请求的结果
-  BaseResp<T> _parseResponse<T>(Response response, RespConfig? respConfig,
-      OnFromJson<T>? onFromJson) {
+  BaseResp<T> _parseResponse<T>(
+      Response response, RespConfig? respConfig, OnFromJson<T>? onFromJson) {
     String filedCode = respConfig?.filedCode ?? _respConfig.filedCode;
     String filedMsg = respConfig?.filedMsg ?? _respConfig.filedMsg;
-    int successCode = respConfig?.successCode ?? _respConfig.successCode;
+    String successCode = respConfig?.successCode ?? _respConfig.successCode;
 
-    int code = -1;
+    String code;
     String? msg;
     T? data;
 
@@ -347,7 +348,8 @@ class HttpManager {
 
       Map<String, dynamic> result = jsonDecode(utf8.decode(body));
 
-      code = result[filedCode] ?? -1;
+      dynamic cd = result[filedCode];
+      code =  cd?.toString() ?? "-1";
       msg = result[filedMsg];
 
       if (code == successCode) {
@@ -359,7 +361,9 @@ class HttpManager {
     }
 
     if (code != successCode) {
-      return BaseResp(false, error: CstException(code, msg ?? "业务错误码不等于业务成功码"));
+      return BaseResp(false,
+          error: CstException(
+              code?.parseInt(defaultValue: -1) ?? -1, msg ?? "业务错误码不等于业务成功码"));
     }
 
     return BaseResp(true, data: data);

@@ -1,10 +1,10 @@
 class RespConfig {
   final String filedCode;
   final String filedMsg;
-  final int successCode;
+  final String successCode;
 
   RespConfig(
       {this.filedCode = "code",
       this.filedMsg = "msg",
-      this.successCode = 200});
+      this.successCode = "200"});
 }

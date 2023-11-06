@@ -50,7 +50,7 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
          cacheConfig: CacheConfig(),
          debug: true,
          // 返回结果配置，接口返回之后进行内部结果解析
-         respConfig: RespConfig(filedCode: "code", filedMsg: "message", successCode: 200));
+         respConfig: RespConfig(filedCode: "code", filedMsg: "message", successCode: "200"));
      runApp(const MyApp());
    }
    

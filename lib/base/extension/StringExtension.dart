@@ -110,6 +110,22 @@ extension StringExtension on String {
     return Text.rich(
         textAlign: TextAlign.left, TextSpan(children: textSpanList));
   }
+
+  int parseInt({int defaultValue = 0}) {
+    try {
+      return int.parse(this);
+    } catch (e) {
+      return defaultValue;
+    }
+  }
+
+  double parseDouble({double defaultValue = 0.0}) {
+    try {
+      return double.parse(this);
+    } catch (e) {
+      return defaultValue;
+    }
+  }
 }
 
 class KeyWordIndex {
