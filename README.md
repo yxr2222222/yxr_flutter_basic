@@ -7,7 +7,7 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
    ```yaml
    dependencies:
       # 集成yxr_flutter_basic依赖
-      yxr_flutter_basic: ^0.0.6
+      yxr_flutter_basic: ^0.0.7
       # 集成yxr_flutter_basic内部使用到的依赖
       cupertino_icons: ^1.0.2
       fluttertoast: ^8.2.2
@@ -37,7 +37,7 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
    import 'package:yxr_flutter_basic/base/extension/BuildContextExtension.dart';
    import 'package:yxr_flutter_basic/base/http/HttpManager.dart';
    import 'package:yxr_flutter_basic/base/http/cache/CacheConfig.dart';
-   import 'package:yxr_flutter_basic/base/http/model/BaseRespConfig.dart';
+   import 'package:yxr_flutter_basic/base/http/model/RespConfig.dart';
    import 'package:yxr_flutter_basic/base/ui/page/SimpleSplashPage.dart';
    import 'FunctionListPage.dart';
    
@@ -50,7 +50,7 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
          cacheConfig: CacheConfig(),
          debug: true,
          // 返回结果配置，接口返回之后进行内部结果解析
-         respConfig: BaseRespConfig(filedCode: "code", filedMsg: "message", successCode: 200));
+         respConfig: RespConfig(filedCode: "code", filedMsg: "message", successCode: 200));
      runApp(const MyApp());
    }
    

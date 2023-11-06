@@ -1,9 +1,9 @@
-class BaseRespConfig {
+class RespConfig {
   final String filedCode;
   final String filedMsg;
   final int successCode;
 
-  BaseRespConfig(
+  RespConfig(
       {this.filedCode = "code",
       this.filedMsg = "msg",
       this.successCode = 200});

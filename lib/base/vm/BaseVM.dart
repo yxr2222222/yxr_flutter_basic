@@ -94,38 +94,41 @@ abstract class BaseVM {
       showLoading(loadingTxt: loadingTxt, cancelable: isLoadingCancelable);
     }
 
-    // 调用接口请求方法
-    HttpManager.getInstance().request(
-        future: future,
-        onSuccess: (T? data) {
-          // 接口请求成功
-          if (!isFinishing()) {
-            if (isNeedLoading) {
-              dismissLoading();
-            }
-            if (onSuccess != null) {
-              onSuccess(data);
-            }
-          }
-        },
-        onFailed: (CstException e) {
-          // 接口请求失败
-          if (!isFinishing()) {
-            if (isNeedLoading) {
-              dismissLoading();
-            }
+    future.then(
+        (resp) => {
+              _checkSuccessFailed(resp, (T? data) {
+                // 接口请求成功
+                if (!isFinishing()) {
+                  if (isNeedLoading) {
+                    dismissLoading();
+                  }
+                  if (onSuccess != null) {
+                    onSuccess(data);
+                  }
+                }
+              }, (e) {
+                // 接口请求失败
+                if (!isFinishing()) {
+                  if (isNeedLoading) {
+                    dismissLoading();
+                  }
 
-            if (isShowErrorDetailToast == true) {
-              showToast(e.detailMessage);
-            } else if (isShowErrorToast == true) {
-              showToast(e.message);
-            }
+                  if (isShowErrorDetailToast == true) {
+                    showToast(e.detailMessage);
+                  } else if (isShowErrorToast == true) {
+                    showToast(e.message);
+                  }
 
-            if (onFailed != null) {
-              onFailed(e);
-            }
-          }
-        });
+                  if (onFailed != null) {
+                    onFailed(e);
+                  }
+                }
+              })
+            }, onError: (e) {
+      _onFailed(onFailed, CstException.buildException(e));
+    }).catchError((e) {
+      return e;
+    });
   }
 
   /// 下载文件
@@ -239,6 +242,29 @@ abstract class BaseVM {
       _apiList.add(api);
     }
     return api;
+  }
+
+  void _onSuccess<T>(OnSuccess<T>? onSuccess, T? data) {
+    if (onSuccess != null) {
+      onSuccess(data);
+    }
+  }
+
+  void _onFailed(OnFailed? onFailed, CstException exception) {
+    Log.d("Http request failed", error: exception);
+    if (onFailed != null) {
+      onFailed(exception);
+    }
+  }
+
+  /// 检查是走成功还是失败回调
+  _checkSuccessFailed<T>(
+      BaseResp<T> resp, OnSuccess<T>? onSuccess, OnFailed? onFailed) {
+    if (resp.isSuccess) {
+      _onSuccess(onSuccess, resp.data);
+    } else {
+      _onFailed(onFailed, resp.error ?? CstException(-1, "未知异常"));
+    }
   }
 }
 

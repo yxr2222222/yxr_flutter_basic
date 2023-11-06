@@ -39,7 +39,13 @@ extension ObjectExtension on Object {
       Future<Directory> future;
       String? directory = "downloads";
       if (isAndroid()) {
-        future = getTemporaryDirectory();
+        var externalCacheDirectories = await getExternalCacheDirectories();
+        var externalCacheDirectory = externalCacheDirectories?.firstOrNull;
+        if (externalCacheDirectory == null) {
+          future = getTemporaryDirectory();
+        } else {
+          future = Future.value(externalCacheDirectory);
+        }
       } else {
         var downloadDir = await getDownloadsDirectory();
         if (downloadDir == null) {

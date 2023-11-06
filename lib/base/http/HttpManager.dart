@@ -8,13 +8,12 @@ import 'package:yxr_flutter_basic/base/http/cache/CacheStrategy.dart';
 import 'package:yxr_flutter_basic/base/http/interceptor/LoggingInterceptor.dart';
 import 'package:yxr_flutter_basic/base/http/cache/HttpCacheInterceptor.dart';
 import 'package:yxr_flutter_basic/base/http/interceptor/RequestInterceptor.dart';
-import 'package:yxr_flutter_basic/base/util/Log.dart';
 import '../model/BaseResp.dart';
 import '../util/StorageUtil.dart';
 import 'cache/CacheConfig.dart';
 import 'cache/CacheManager.dart';
 import 'exception/CstException.dart';
-import 'model/BaseRespConfig.dart';
+import 'model/RespConfig.dart';
 import 'model/ReqType.dart';
 
 // UnuseJs这个完成是为了过非Web端的编译
@@ -30,7 +29,7 @@ class HttpManager {
   };
   final Map<String, dynamic> _publicQueryParams = {};
 
-  late BaseRespConfig _respConfig;
+  late RespConfig _respConfig;
   late bool _debug;
 
   bool get debug => _debug;
@@ -50,7 +49,7 @@ class HttpManager {
   Future<bool> init(
       {required String baseUrl,
       bool debug = false,
-      BaseRespConfig? respConfig,
+      RespConfig? respConfig,
       int connectTimeout = 15000,
       int receiveTimeout = 15000,
       Map<String, dynamic>? publicHeaders,
@@ -63,7 +62,7 @@ class HttpManager {
     await StorageUtil.init();
 
     _debug = debug;
-    _respConfig = respConfig ?? BaseRespConfig();
+    _respConfig = respConfig ?? RespConfig();
     publicHeaders?.forEach((key, value) {
       _publicHeaders[key] = value;
     });
@@ -136,7 +135,7 @@ class HttpManager {
     });
   }
 
-  BaseRespConfig getRespConfig() {
+  RespConfig getRespConfig() {
     return _respConfig;
   }
 
@@ -149,7 +148,7 @@ class HttpManager {
     Options? options,
     Object? body,
     CancelToken? cancelToken,
-    BaseRespConfig? respConfig,
+    RespConfig? respConfig,
     CacheMode? cacheMode = CacheMode.ONLY_NETWORK,
     int? cacheTime,
     String? customCacheKey,
@@ -162,7 +161,6 @@ class HttpManager {
           options: options,
           body: body,
           cancelToken: cancelToken,
-          respConfig: respConfig,
           cacheMode: cacheMode,
           cacheTime: cacheTime,
           customCacheKey: customCacheKey);
@@ -183,7 +181,6 @@ class HttpManager {
     Options? options,
     Object? body,
     CancelToken? cancelToken,
-    BaseRespConfig? respConfig,
     CacheMode? cacheMode = CacheMode.ONLY_NETWORK,
     int? cacheTime,
     String? customCacheKey,
@@ -231,19 +228,6 @@ class HttpManager {
         }
     }
     return future;
-  }
-
-  /// 回调方式调用的网络请求
-  void request<T>(
-      {required Future<BaseResp<T>> future,
-      OnSuccess<T>? onSuccess,
-      OnFailed? onFailed}) {
-    future.then((resp) => {_checkSuccessFailed(resp, onSuccess, onFailed)},
-        onError: (e) {
-      _onFailed(onFailed, CstException.buildException(e));
-    }).catchError((e) {
-      return e;
-    });
   }
 
   /// 下载文件，由于web端适配问题，没有通过Future的方式
@@ -337,7 +321,7 @@ class HttpManager {
   }
 
   /// 解析请求的结果
-  BaseResp<T> _parseResponse<T>(Response response, BaseRespConfig? respConfig,
+  BaseResp<T> _parseResponse<T>(Response response, RespConfig? respConfig,
       OnFromJson<T>? onFromJson) {
     String filedCode = respConfig?.filedCode ?? _respConfig.filedCode;
     String filedMsg = respConfig?.filedMsg ?? _respConfig.filedMsg;
@@ -379,29 +363,6 @@ class HttpManager {
     }
 
     return BaseResp(true, data: data);
-  }
-
-  void _onSuccess<T>(OnSuccess<T>? onSuccess, T? data) {
-    if (onSuccess != null) {
-      onSuccess(data);
-    }
-  }
-
-  void _onFailed(OnFailed? onFailed, CstException exception) {
-    Log.d("Http request failed", error: exception);
-    if (onFailed != null) {
-      onFailed(exception);
-    }
-  }
-
-  /// 检查是走成功还是失败回调
-  _checkSuccessFailed<T>(
-      BaseResp<T> resp, OnSuccess<T>? onSuccess, OnFailed? onFailed) {
-    if (resp.isSuccess) {
-      _onSuccess(onSuccess, resp.data);
-    } else {
-      _onFailed(onFailed, resp.error ?? CstException(-1, "未知异常"));
-    }
   }
 }
 
