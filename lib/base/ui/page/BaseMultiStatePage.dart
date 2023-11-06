@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:yxr_flutter_basic/base/model/controller/AppbarController.dart';
 import 'package:yxr_flutter_basic/base/model/controller/ViewStateController.dart';
 import 'package:yxr_flutter_basic/base/model/em/ViewState.dart';
@@ -9,9 +10,13 @@ import 'BasePage.dart';
 
 abstract class BaseMultiPage<VM extends BaseMultiVM> extends BasePage<VM> {
   final double appbarHeight;
+  final bool extendBodyBehindAppBar;
 
   BaseMultiPage(
-      {super.key, required super.viewModel, this.appbarHeight = 56.0});
+      {super.key,
+      required super.viewModel,
+      this.appbarHeight = 56.0,
+      this.extendBodyBehindAppBar = false});
 }
 
 abstract class BaseMultiPageState<VM extends BaseMultiVM,
@@ -25,6 +30,7 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
             Size(MediaQuery.of(context).size.width, widget.appbarHeight),
         child: createAppBar(context, viewModel),
       ),
+      extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
       body: Container(
           width: double.infinity,
           height: double.infinity,
@@ -57,7 +63,7 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
     return GetBuilderUtil.builder<AppbarController>(
         (controller) => AppBar(
               // 禁止appbar因为滚动控件滚动导致的背景颜色变化
-              flexibleSpace: null,
+              surfaceTintColor: Colors.transparent,
               leading: GestureDetector(
                 onTap: () {
                   viewModel.onBackPressed();

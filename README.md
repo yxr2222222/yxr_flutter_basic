@@ -91,6 +91,9 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
      }
    ```
 4. 文件下载，具体参考[商品详情](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/ProductDetailPage.dart)
+5. 沉浸式状态栏，具体参考[商品详情](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/ProductDetailPage.dart)
+   1. 继承BaseMultiPage时设置extendBodyBehindAppBar: true;
+   2. VM中设置appbarController.appbarBackgroundColor = Colors.transparent;
 
 ## 注意事项
 1. 如果你的项目需要支持Web平台，请将以下<script></script>代码添加到web平台下index.html文件的<script>...</script>中
