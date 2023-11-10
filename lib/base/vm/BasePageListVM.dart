@@ -14,6 +14,7 @@ abstract class BasePageListVM<T, E> extends BaseListVM<T> {
   bool? _firstRetryDialogLoading;
   String? _firstRetryLoadingTxt;
 
+  bool _hasMore = true;
   int _page = 0;
 
   int get page => _page;
@@ -33,6 +34,7 @@ abstract class BasePageListVM<T, E> extends BaseListVM<T> {
     this._firstRetryDialogLoading = dialogLoading;
     this._firstRetryLoadingTxt = loadingTxt;
     _page = initPage();
+    _hasMore = true;
     if (multiStateLoading == true) {
       showLoadingState(loadingTxt: loadingTxt);
     }
@@ -122,10 +124,15 @@ abstract class BasePageListVM<T, E> extends BaseListVM<T> {
     if (_isNotLoading()) {
       if (isRefresh) {
         _page = initPage();
+        _hasMore = true;
       }
 
-      var resp = await loadData(_page, getPageSize());
-      _checkUpdateResp(resp, isRefresh);
+      if (_hasMore) {
+        var resp = await loadData(_page, getPageSize());
+        _checkUpdateResp(resp, isRefresh);
+      } else {
+        _refreshLoadSuccess(isRefresh, false, []);
+      }
     }
   }
 
@@ -154,14 +161,16 @@ abstract class BasePageListVM<T, E> extends BaseListVM<T> {
   /// 下拉刷新/加载更多操作成功
   void _refreshLoadSuccess(bool isRefresh, bool hasMore, List<T> itemList,
       {bool first = false, bool? multiStateLoading, bool? dialogLoading}) {
+    _hasMore = hasMore;
     if (!isFinishing()) {
       _page++;
       if (isRefresh) {
         refreshController.finishRefresh();
         refreshController.resetFooter();
-      } else if (hasMore) {
-        refreshController.finishLoad();
       } else {
+        refreshController.finishLoad();
+      }
+      if (!hasMore) {
         refreshController.finishLoad(IndicatorResult.noMore);
       }
       refreshData(isClear: isRefresh, dataList: itemList);

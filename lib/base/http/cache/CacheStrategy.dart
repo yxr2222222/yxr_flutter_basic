@@ -1,4 +1,6 @@
 class CacheStrategy {
+  CacheStrategy._internal();
+
   /// 缓存模式的参数key
   static const String CACHE_MODE = "Key-Cache-Mode";
 

@@ -27,12 +27,12 @@ class WebViewFunction implements IWebViewFunction {
         ..setNavigationDelegate(NavigationDelegate(onPageStarted: (url) async {
           if (onPageStarted != null) {
             var title = await _controller?.getTitle();
-            onPageStarted!(url, title);
+            onPageStarted?.call(url, title);
           }
         }, onPageFinished: (url) async {
           if (onPageFinished != null) {
             var title = await _controller?.getTitle();
-            onPageFinished!(url, title);
+            onPageFinished?.call(url, title);
           }
         }));
     }

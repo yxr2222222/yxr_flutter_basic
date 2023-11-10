@@ -10,13 +10,17 @@ import 'BasePage.dart';
 
 abstract class BaseMultiPage<VM extends BaseMultiVM> extends BasePage<VM> {
   final double appbarHeight;
+  final bool isNeedAppBar;
   final bool extendBodyBehindAppBar;
+  final bool resizeToAvoidBottomInset;
 
   BaseMultiPage(
       {super.key,
       required super.viewModel,
       this.appbarHeight = 56.0,
-      this.extendBodyBehindAppBar = false});
+      this.isNeedAppBar = true,
+      this.extendBodyBehindAppBar = false,
+      this.resizeToAvoidBottomInset = false});
 }
 
 abstract class BaseMultiPageState<VM extends BaseMultiVM,
@@ -25,11 +29,14 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
 
   @override
   Widget createContentWidget(BuildContext context, VM viewModel) => Scaffold(
-      appBar: PreferredSize(
-        preferredSize:
-            Size(MediaQuery.of(context).size.width, widget.appbarHeight),
-        child: createAppBar(context, viewModel),
-      ),
+      resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
+      appBar: widget.isNeedAppBar
+          ? PreferredSize(
+              preferredSize:
+                  Size(MediaQuery.of(context).size.width, widget.appbarHeight),
+              child: createAppBar(context, viewModel),
+            )
+          : null,
       extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
       body: Container(
           width: double.infinity,

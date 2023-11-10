@@ -13,7 +13,7 @@ class CstException implements Exception {
         .toString();
   }
 
-  static CstException buildException(Exception e) {
+  static CstException buildException(dynamic e) {
     if (e is DioException) {
       switch (e.type) {
         case DioExceptionType.cancel:

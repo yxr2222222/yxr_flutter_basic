@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import './WebViewApp.dart' if (dart.library.js) './WebViewHtml.dart' as js;
+import './WebViewApp.dart' if (dart.library.js) './WebViewHtml.dart' as platform;
 import 'WebViewFunction.dart';
 
 class WebViewPlatform extends StatelessWidget {
@@ -14,7 +14,7 @@ class WebViewPlatform extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return js.WebView(
+    return platform.WebView(
       firstUrl: firstUrl,
       function: function,
     );

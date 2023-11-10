@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:yxr_flutter_basic/base/extension/BuildContextExtension.dart';
 import 'package:yxr_flutter_basic/base/ui/page/BasePage.dart';
 import 'package:yxr_flutter_basic/base/util/Log.dart';
@@ -65,11 +66,39 @@ abstract class BaseVM {
     return false;
   }
 
+  /// 页面退出，dialog的dismiss
+  /// [cantPopExit] 如果不可pop的时候是否退出当前APP，默认是true
+  void pop<T extends Object?>({T? result, bool cantPopExit = true}) {
+    context?.pop(result: result, cantPopExit: cantPopExit);
+  }
+
+  /// 跳转页面
+  /// [page] 需要跳转的页面
+  /// [finishCurr] 是否需要结束当前页面，注意确认当前页面是否可退出
+  Future<T?> push<T>(Widget page, {bool finishCurr = false}) async {
+    return context == null ? null : context!.push(page, finishCurr: finishCurr);
+  }
+
   /// 展示toast
   void showToast(String? msg) {
     if (msg != null) {
       Fluttertoast.showToast(msg: msg);
     }
+  }
+
+  /// 检查是否有权限
+  Future<bool> checkHasPermissions(List<Permission> permissions) async {
+    if (permissions.isEmpty) {
+      return true;
+    }
+    for (var permission in permissions) {
+      var permissionStatus = await permission.status;
+      if (!permissionStatus.isGranted) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /// 请求权限
@@ -195,17 +224,13 @@ abstract class BaseVM {
       Color? barrierColor,
       bool barrierDismissible = false,
       bool cancelable = false}) {
-    if (onShowLoading != null) {
-      onShowLoading!(loadingTxt, barrierColor ?? Colors.transparent,
-          barrierDismissible, cancelable);
-    }
+    onShowLoading?.call(loadingTxt, barrierColor ?? Colors.transparent,
+        barrierDismissible, cancelable);
   }
 
   /// 隐藏loading弹框
   void dismissLoading() {
-    if (onDismissLoading != null) {
-      onDismissLoading!();
-    }
+    onDismissLoading?.call();
   }
 
   /// 取消所有未完成的网络请求
@@ -242,6 +267,26 @@ abstract class BaseVM {
       _apiList.add(api);
     }
     return api;
+  }
+
+  void showKeyboard(FocusNode focusNode) {
+    try {
+      if (context?.mounted == true) {
+        FocusScope.of(context!).requestFocus(focusNode);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void hideKeyboard() {
+    try {
+      if (context?.mounted == true) {
+        FocusScope.of(context!).unfocus();
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   void _onSuccess<T>(OnSuccess<T>? onSuccess, T? data) {

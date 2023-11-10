@@ -33,9 +33,7 @@ class BaseItemWidgetState<T> extends State<BaseItemWidget<T>> {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          if (widget.onItemClick != null) {
-            widget.onItemClick!(this, context);
-          }
+          widget.onItemClick?.call(this, context);
         },
         child: widget.childItemBuilder(this, context));
   }

@@ -53,6 +53,15 @@ extension BuildContextExtension on BuildContext {
     }
   }
 
+  /// 获取屏幕宽度
+  double getScreenWidth() => MediaQuery.of(this).size.width;
+
+  /// 获取屏幕高度
+  double getScreenHeight() => MediaQuery.of(this).size.height;
+
+  /// 获取状态栏高度
+  double getStatusHeight() => MediaQuery.of(this).padding.top;
+
   /// 当前context是否可用（mounted）
   bool isUseful() {
     return mounted;

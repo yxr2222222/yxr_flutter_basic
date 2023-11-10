@@ -29,22 +29,6 @@ extension StringExtension on String {
     }
   }
 
-  /// 查找字符串中所有[keyword]的下标，返回下标集合
-  List<KeyWordIndex> indexOfList(String keyword) {
-    List<KeyWordIndex> occurrences = [];
-    int index = 0;
-
-    while (index < length) {
-      int position = indexOf(keyword, index);
-      if (position == -1) {
-        break;
-      }
-      occurrences.add(KeyWordIndex(keyword, position));
-      index = position + 1;
-    }
-    return occurrences;
-  }
-
   /// 根据关键字创建关键字高亮可点击的富文本widget
   /// [keywords] 需要高亮可点击的关键字列表
   /// [textColor] 文本颜色，默认是黑色
@@ -67,11 +51,11 @@ extension StringExtension on String {
     keywordFontWeight = keywordFontWeight ?? fontWeight;
 
     List<TextSpan> textSpanList = [];
-    List<KeyWordIndex> keywordIndexList = [];
+    List<_KeyWordIndex> keywordIndexList = [];
 
     // 找到所有关键字的下标
     for (var keyword in keywords) {
-      keywordIndexList.addAll(indexOfList(keyword));
+      keywordIndexList.addAll(_indexOfList(keyword));
     }
 
     // 下标升序排序
@@ -104,13 +88,39 @@ extension StringExtension on String {
               fontSize: keywordFontSize),
           recognizer: recognizer));
 
-      startIndex = startIndex + keywordIndex.keyword.length;
+      startIndex = startIndex + normalText.length + keywordIndex.keyword.length;
+    }
+
+    if (startIndex < length) {
+      var normalText = substring(startIndex, length);
+      textSpanList.add(TextSpan(
+          text: normalText,
+          style: TextStyle(
+              color: textColor, fontWeight: fontWeight, fontSize: fontSize)));
     }
 
     return Text.rich(
         textAlign: TextAlign.left, TextSpan(children: textSpanList));
   }
 
+  /// 查找字符串中所有[keyword]的下标，返回下标集合
+  List<_KeyWordIndex> _indexOfList(String keyword) {
+    List<_KeyWordIndex> occurrences = [];
+    int index = 0;
+
+    while (index < length) {
+      int position = indexOf(keyword, index);
+      if (position == -1) {
+        break;
+      }
+      occurrences.add(_KeyWordIndex(keyword, position));
+      index = position + 1;
+    }
+    return occurrences;
+  }
+
+  /// 文字转int
+  /// [defaultValue] 默认值
   int parseInt({int defaultValue = 0}) {
     try {
       return int.parse(this);
@@ -119,6 +129,8 @@ extension StringExtension on String {
     }
   }
 
+  /// 文字转double
+  /// [defaultValue] 默认值
   double parseDouble({double defaultValue = 0.0}) {
     try {
       return double.parse(this);
@@ -128,9 +140,9 @@ extension StringExtension on String {
   }
 }
 
-class KeyWordIndex {
+class _KeyWordIndex {
   final String keyword;
   final int index;
 
-  KeyWordIndex(this.keyword, this.index);
+  _KeyWordIndex(this.keyword, this.index);
 }

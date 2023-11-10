@@ -24,6 +24,9 @@ abstract class BasePageState<VM extends BaseVM, W extends BasePage<VM>>
   late BuildContext _context;
   BuildContext? _currLoading;
 
+  late VisibilityDetector _detector;
+
+
   bool _created = false;
   bool _resumed = false;
   AppLifecycleListener? _lifecycleListener;
@@ -32,6 +35,25 @@ abstract class BasePageState<VM extends BaseVM, W extends BasePage<VM>>
   void initState() {
     VisibilityDetectorController.instance.updateInterval = Duration.zero;
     this._viewModel = widget.viewModel;
+
+    this._detector = VisibilityDetector(
+        key: UniqueKey(),
+        // 内容控件交由子类自行实现
+        child: const SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+        ),
+        // page可见性回调，用于处理page的onPause、onResume事件
+        onVisibilityChanged: (visibilityInfo) {
+          var visiblePercentage =
+              visibilityInfo.visibleFraction * 100;
+          // double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+          if (visiblePercentage > 0) {
+            _onResume(false);
+          } else {
+            _onPause(false);
+          }
+        });
 
     // 添加第一次绘制完成监听
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -66,24 +88,20 @@ abstract class BasePageState<VM extends BaseVM, W extends BasePage<VM>>
   Widget build(BuildContext context) {
     super.build(context);
     // 初始化ViewModel
-    viewModel.init(context);
+    this.viewModel.init(context);
     this._context = context;
-    // 添加拦截控制，将backPress交给viewModel.onBackPressed处理
+
+    /// 添加拦截控制，将backPress交给viewModel.onBackPressed处理
     return WillPopScope(
-      // 添加可见性监听控件，用于处理page的onPause、onResume事件
-        child: VisibilityDetector(
-            key: UniqueKey(),
-            // 内容控件交由子类自行实现
-            child: createContentWidget(context, viewModel),
-            // page可见性回调，用于处理page的onPause、onResume事件
-            onVisibilityChanged: (visibilityInfo) {
-              var visiblePercentage = visibilityInfo.visibleFraction * 100;
-              if (visiblePercentage >= 80) {
-                _onResume(false);
-              } else {
-                _onPause(false);
-              }
-            }),
+        child: Stack(
+          children: [
+            /// 添加可见性监听控件，用于处理page的onPause、onResume事件
+            _detector,
+
+            /// 页面内容视图
+            createContentWidget(context, viewModel)
+          ],
+        ),
         onWillPop: () => Future(() => viewModel.onBackPressed()));
   }
 
@@ -147,16 +165,16 @@ abstract class BasePageState<VM extends BaseVM, W extends BasePage<VM>>
 
   /// onPause生命周期判断
   void _onPause(bool isFromLifecycle) {
-    if (_created && _resumed) {
-      if (!isFromLifecycle || ModalRoute.of(context)?.isCurrent == true) {
-        _resumed = false;
+    if (_created &&
+        _resumed &&
+        (!isFromLifecycle || ModalRoute.of(context)?.isCurrent == true)) {
+      _resumed = false;
 
-        onPause();
-        viewModel.onPause();
-        _forEachLifecycle((listener) {
-          listener.onLifecycle(context, listener.onPause);
-        });
-      }
+      onPause();
+      viewModel.onPause();
+      _forEachLifecycle((listener) {
+        listener.onLifecycle(context, listener.onPause);
+      });
     }
   }
 
@@ -218,6 +236,14 @@ abstract class BasePageState<VM extends BaseVM, W extends BasePage<VM>>
   /// 如果不喜欢这个加载弹框样式，可以重写
   Dialog createLoadingDialog(String? loadingTxt) {
     return DefaultLoadingDialog(loadingTxt);
+  }
+
+  void showKeyboard(FocusNode focusNode) {
+    viewModel.showKeyboard(focusNode);
+  }
+
+  void hideKeyboard() {
+    viewModel.hideKeyboard();
   }
 
   /// 便利执行生命周期监听回调

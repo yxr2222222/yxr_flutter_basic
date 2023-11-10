@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:yxr_flutter_basic/base/model/controller/SimpleGetxController.dart';
-import 'package:yxr_flutter_basic/base/util/GetBuilderUtil.dart';
 
-class BottomNavigationBarViewPager extends StatelessWidget {
+class BottomNavigationBarViewPager extends StatefulWidget {
   final List<ViewPagerData> viewPagerDataList;
   final Color normalTxtColor;
   final Color checkedTxtColor;
@@ -14,7 +12,7 @@ class BottomNavigationBarViewPager extends StatelessWidget {
   final PageController pageController;
   final BottomNavigationBarType type;
   final bool canUserScroll;
-  final SimpleGetxController<int> _currIndex = SimpleGetxController(0);
+  final ValueChanged<int>? onPageChanged;
 
   /// 类似Android的ViewPager+底部Tab的组件
   /// [viewPagerDataList] 子page列表数据
@@ -38,31 +36,46 @@ class BottomNavigationBarViewPager extends StatelessWidget {
       this.normalTxtShow = true,
       this.checkedTxtShow = true,
       this.initIndex = 0,
+      this.onPageChanged,
       PageController? pageController,
       BottomNavigationBarType? type,
       bool? canUserScroll})
       : normalTxtColor = normalTxtColor ?? const Color(0xff999999),
         checkedTxtColor = checkedTxtColor ?? const Color(0xff333333),
         pageController =
-            pageController ?? PageController(initialPage: initIndex),
+            pageController ?? PageController(initialPage: initIndex, keepPage: true),
         type = type ?? BottomNavigationBarType.fixed,
         canUserScroll = canUserScroll ?? true;
 
-  int get currIndex => _currIndex.dataNotNull;
+  @override
+  State<StatefulWidget> createState() => _BottomNavigationBarViewPagerState();
+}
+
+class _BottomNavigationBarViewPagerState
+    extends State<BottomNavigationBarViewPager> {
+  int _currIndex = 0;
+
+  int get currIndex => _currIndex;
 
   set currIndex(int currIndex) {
-    if (currIndex != _currIndex.data) {
-      _currIndex.data = currIndex;
-      pageController.jumpToPage(currIndex);
+    if (currIndex != _currIndex) {
+      widget.pageController.jumpToPage(currIndex);
+      setState(() {
+        _currIndex = currIndex;
+      });
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    currIndex = initIndex;
+  void initState() {
+    super.initState();
+    _currIndex = widget.initIndex;
+  }
 
+  @override
+  Widget build(BuildContext context) {
     List<BottomNavigationBarItem> bottomNavigationBarItemList = [];
-    for (var element in viewPagerDataList) {
+    for (var element in widget.viewPagerDataList) {
       bottomNavigationBarItemList.add(element.bottomNavigationBarItem);
     }
 
@@ -72,48 +85,48 @@ class BottomNavigationBarViewPager extends StatelessWidget {
         Expanded(
             child: PageView.builder(
                 itemBuilder: (context, index) => _getPageWidget(index),
-                itemCount: viewPagerDataList.length,
-                controller: pageController,
-                physics:
-                    canUserScroll ? null : const NeverScrollableScrollPhysics(),
+                itemCount: widget.viewPagerDataList.length,
+                controller: widget.pageController,
+                physics: widget.canUserScroll
+                    ? null
+                    : const NeverScrollableScrollPhysics(),
                 onPageChanged: (index) {
                   currIndex = index;
+                  widget.onPageChanged?.call(index);
                 })),
         Theme(
           data: ThemeData(
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
           ),
-          child: GetBuilderUtil.builder(
-              (controller) => BottomNavigationBar(
-                    // 未选中颜色
-                    unselectedItemColor: normalTxtColor,
-                    // 选中颜色
-                    selectedItemColor: checkedTxtColor,
-                    // 未选中文字大小
-                    unselectedFontSize: normalTxtSize,
-                    // 选中文字大小
-                    selectedFontSize: checkedTxtSize,
-                    // 显示选中的文字
-                    showSelectedLabels: checkedTxtShow,
-                    // 显示不选中时的问题
-                    showUnselectedLabels: normalTxtShow,
-                    // 当前下标
-                    currentIndex: _currIndex.dataNotNull,
-                    type: type,
-                    onTap: (index) {
-                      currIndex = index;
-                    },
-                    items: bottomNavigationBarItemList,
-                  ),
-              init: _currIndex),
+          child: BottomNavigationBar(
+            // 未选中颜色
+            unselectedItemColor: widget.normalTxtColor,
+            // 选中颜色
+            selectedItemColor: widget.checkedTxtColor,
+            // 未选中文字大小
+            unselectedFontSize: widget.normalTxtSize,
+            // 选中文字大小
+            selectedFontSize: widget.checkedTxtSize,
+            // 显示选中的文字
+            showSelectedLabels: widget.checkedTxtShow,
+            // 显示不选中时的问题
+            showUnselectedLabels: widget.normalTxtShow,
+            // 当前下标
+            currentIndex: _currIndex,
+            type: widget.type,
+            onTap: (index) {
+              currIndex = index;
+            },
+            items: bottomNavigationBarItemList,
+          ),
         )
       ],
     );
   }
 
   Widget _getPageWidget(int index) {
-    return viewPagerDataList[index].pageWidget;
+    return widget.viewPagerDataList[index].pageWidget;
   }
 }
 
