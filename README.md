@@ -84,7 +84,7 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
    2. [BaseMultiStatePage](./lib/base/ui/page/BaseMultiStatePage.dart)是[BasePage](./lib/base/ui/page/BasePage.dart)的子类，还有AppBar和多状态管理功能，结合[BaseMultiVM](./lib/base/vm/BaseMultiVM.dart)可以帮助开发者快速完成多状态页面搭建
    3. [BaseListVM.dart](./lib/base/vm/BaseListVM.dart) 快速完成列表页面搭建
    4. [BasePageListVM.dart](./lib/base/vm/BasePageListVM.dart) 快速完成下拉刷新、上拉加载更多的分页列表页面搭建
-2. 网络请求，具体参考[商品列表分类加载](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/ProductListPage.dart)，[商品详情](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/ProductDetailPage.dart)
+2. 网络分页请求，具体参考[商品列表分类加载](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/product/ProductListPage.dart)，网络请求[商品详情](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/product/ProductDetailPage.dart)
 3. 权限申请，调用[BseVM](./lib/base/vm/BaseVM.dart)以下方法
    ```dart
      /// 请求权限
@@ -94,13 +94,18 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
        }
      }
    ```
-4. 文件下载，具体参考[商品详情](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/ProductDetailPage.dart)
-5. 沉浸式状态栏，具体参考[商品详情](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/ProductDetailPage.dart)
+4. 文件下载，具体参考[商品详情](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/product/ProductDetailPage.dart)
+5. 沉浸式状态栏，具体参考[商品详情](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/product/ProductDetailPage.dart)
    1. 继承BaseMultiPage时设置extendBodyBehindAppBar: true;
    2. VM中设置appbarController.appbarBackgroundColor = Colors.transparent;
+6. BaseMultiPage不要appbar，继承BaseMultiPage并设置isNeedAppBar为false；
+7. [BottomNavigationBarViewPager使用示例](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/bottomtviewpager/BottomNavigationBarViewPagerPage.dart)
+8. [TabbarViewPager使用示例](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/tabviewpager/TabViewPagerPage.dart)
 
 ## 注意事项
-1. 如果你的项目需要支持Web平台，请将以下<script></script>代码添加到web平台下index.html文件的<script>...</script>中
+1. Json解析类生成可以使用FlutterJsonToDart插件（AndroidStudio编译器）快速完成；
+2. BasePage及其子类互相嵌套时，注意只保留最外层VM的onBackPress()事件；
+3. 如果你的项目需要支持Web平台，请将以下<script></script>代码添加到web平台下index.html文件的<script>...</script>中
    ```html
    <script>
        /**
@@ -187,4 +192,3 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
        }
    </script>
    ```
-2. Json解析类生成可以使用FlutterJsonToDart插件（AndroidStudio编译器）快速完成
