@@ -62,7 +62,7 @@ class BaseApi {
   /// [cacheMode] 缓存模式，默认[CacheMode.ONLY_NETWORK]，生效前提是[HttpManager]init时候已经传入了[CacheConfig]
   /// [cacheTime] 缓存时长，单位毫秒，生效前提如上，没有传时默认使用[CacheConfig]的默认配置
   /// [customCacheKey] 当前接口请求的自定义缓存key，生效前提如上，没有传入自动根据接口、参数生成缓存key
-  Future<Response<T>> requestResponse<T>({
+  Future<Response<dynamic>> requestResponse({
     required String path,
     ReqType reqType = ReqType.get,
     Map<String, dynamic>? params,
@@ -76,7 +76,7 @@ class BaseApi {
     cancelToken = cancelToken?? CancelToken();
     _cancelTokenList.add(cancelToken);
 
-    return HttpManager.getInstance().requestResponse<T>(
+    return HttpManager.getInstance().requestResponse(
         path: path,
         reqType: reqType,
         params: params,

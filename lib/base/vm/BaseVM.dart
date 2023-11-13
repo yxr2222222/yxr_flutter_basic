@@ -16,7 +16,6 @@ import '../model/PermissionReq.dart';
 import '../util/PermissionUtil.dart';
 
 abstract class BaseVM {
-  String? _className;
   BuildContext? _context;
   OnShowLoading? onShowLoading;
   OnDismissLoading? onDismissLoading;
@@ -25,7 +24,6 @@ abstract class BaseVM {
 
   void init(BuildContext context) {
     _context = context;
-    _className = runtimeType.toString();
   }
 
   // 上下文
@@ -33,17 +31,14 @@ abstract class BaseVM {
 
   /// onCreate生命周期
   void onCreate() {
-    Log.d("$_className: onCreate...");
   }
 
   /// onResume生命周期
   void onResume() {
-    Log.d("$_className: onResume...");
   }
 
   /// onPause生命周期
   void onPause() {
-    Log.d("$_className: onPause...");
   }
 
   /// onDestroy生命周期
@@ -52,7 +47,6 @@ abstract class BaseVM {
     onShowLoading = null;
     onDismissLoading = null;
     _cancelRequests();
-    Log.d("$_className: onDestroy...");
   }
 
   /// 返回按钮点击

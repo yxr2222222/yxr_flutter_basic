@@ -7,7 +7,7 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
    ```yaml
    dependencies:
       # 集成yxr_flutter_basic依赖
-      yxr_flutter_basic: ^0.0.7
+      yxr_flutter_basic: ^0.1.2
       # 集成yxr_flutter_basic内部使用到的依赖
       cupertino_icons: ^1.0.2
       fluttertoast: ^8.2.2
@@ -27,6 +27,8 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
       path_provider: ^2.1.1
       webview_flutter: ^4.4.1
       url_launcher: ^6.2.1
+      package_info_plus: ^4.2.0
+      cached_network_image: ^3.3.0
       build_runner: ^2.3.3
       json_serializable: ^6.6.0
    ```
@@ -42,7 +44,9 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
    import 'FunctionListPage.dart';
    
    void main() async {
-     /// Step1. 初始化网络请求配置
+     /// Step1. 初始化Basic
+     await Basic.init();
+     /// Step2. 初始化网络请求配置
      await HttpManager.getInstance().init(
        // 接口请求的BaseUrl
          baseUrl: "http://www.baid.com/",
@@ -60,14 +64,14 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
      // This widget is the root of your application.
      @override
      Widget build(BuildContext context) {
-       /// Step2. 替换成Gex主题App
+       /// Step3. 替换成Gex主题App
        return GetMaterialApp(
          title: 'Flutter',
          theme: ThemeData(
            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
            useMaterial3: true,
          ),
-         /// Step3. 完成自己的home配置
+         /// Step4. 完成自己的home配置
          home: Text(),
        );
      }

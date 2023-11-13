@@ -1,22 +1,44 @@
 import 'dart:html';
 import 'dart:ui_web' as ui;
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:yxr_flutter_basic/base/ui/widget/web/IWebViewFunction.dart';
+import 'package:yxr_flutter_basic/base/util/Log.dart';
+import 'WebController.dart';
 
-import 'WebViewFunction.dart';
-
-class WebView extends StatelessWidget implements IWebViewFunction {
-  static const String _id = "iframe-webview";
-  final WebViewFunction function;
+class WebView extends StatefulWidget {
+  final WebController function;
   final String firstUrl;
-  IFrameElement? _iFrameElement;
 
-  WebView({super.key, required this.firstUrl, required this.function});
+  const WebView({super.key, required this.firstUrl, required this.function});
+
+  @override
+  State<StatefulWidget> createState() => _WebViewState();
+}
+
+class _WebViewState extends State<WebView> implements IWebViewFunction {
+  static const String _id = "iframe-webview";
+  IFrameElement? _iFrameElement;
+  EventListener? loadListener;
+
+  @override
+  void initState() {
+    widget.function.init(this);
+    loadListener = (event) {
+      widget.function.onPageFinished?.call(widget.firstUrl, null);
+    };
+    widget.function.loadUrl(url: widget.firstUrl, firstLoad: true);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _iFrameElement?.removeEventListener("load", loadListener);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    function.init(this);
-
     // 注册
     ui.platformViewRegistry.registerViewFactory(_id, (int viewId) {
       var iFrameElement = IFrameElement()
@@ -34,8 +56,11 @@ class WebView extends StatelessWidget implements IWebViewFunction {
           onPlatformViewCreated: (int viewId) {
             _iFrameElement =
                 ui.platformViewRegistry.getViewById(viewId) as IFrameElement?;
-            if (!function.firstLoad) {
-              _iFrameElement?.src = firstUrl;
+            _iFrameElement?.addEventListener("load", loadListener);
+            if (!widget.function.firstLoaded) {
+              Log.d("onPageStarted..........");
+              widget.function.onPageStarted?.call(widget.firstUrl, null);
+              _iFrameElement?.src = widget.firstUrl;
             }
           },
         ));
@@ -60,7 +85,7 @@ class WebView extends StatelessWidget implements IWebViewFunction {
   Future<bool> reload() async {
     var location = _iFrameElement?.contentWindow?.location;
     if (location != null) {
-      location.href = firstUrl;
+      location.href = widget.firstUrl;
       return true;
     }
     return false;
@@ -68,12 +93,14 @@ class WebView extends StatelessWidget implements IWebViewFunction {
 
   @override
   Future<String?> currentUrl() async {
-    return firstUrl;
+    return widget.firstUrl;
   }
 
   @override
   Future<bool> loadUrl({required String url}) async {
     if (_iFrameElement != null) {
+      Log.d("onPageStarted..........");
+      widget.function.onPageStarted?.call(url, null);
       _iFrameElement!.src = url;
       return true;
     }

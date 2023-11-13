@@ -12,7 +12,7 @@ class TabbarViewPager extends StatefulWidget {
   final TabBarIndicatorSize tabbarIndicatorSize;
   final TextStyle tabbarLabelStyle;
   final TextStyle tabbarUnselectedLabelStyle;
-
+  final bool preNextPage;
   final bool canUserScroll;
   final PageController pageController;
   final ValueChanged<int>? onPageChanged;
@@ -22,6 +22,7 @@ class TabbarViewPager extends StatefulWidget {
       this.tabbarBackground = Colors.white,
       this.tabbarWidth = double.infinity,
       this.tabbarIsScrollable = true,
+      this.preNextPage = false,
       this.tabbarIndicatorColor = Colors.blue,
       this.tabbarIndicatorSize = TabBarIndicatorSize.label,
       this.tabbarLabelStyle = const TextStyle(
@@ -57,6 +58,15 @@ class _TabbarViewPagerState extends State<TabbarViewPager>
     super.initState();
     _tabController =
         TabController(length: widget.tabbarDataList.length, vsync: this);
+    widget.pageController.addListener(() {
+      // 页面滑动时，更新Tab的位置
+      if (!_tabController.indexIsChanging) {
+        var page = widget.pageController.page;
+        if (page != null) {
+          _tabController.animateTo(page.round());
+        }
+      }
+    });
   }
 
   @override
@@ -96,6 +106,7 @@ class _TabbarViewPagerState extends State<TabbarViewPager>
                     widget.tabbarDataList[index].content,
                 itemCount: widget.tabbarDataList.length,
                 controller: widget.pageController,
+                allowImplicitScrolling: widget.preNextPage,
                 physics: widget.canUserScroll
                     ? null
                     : const NeverScrollableScrollPhysics(),
@@ -110,6 +121,7 @@ class _TabbarViewPagerState extends State<TabbarViewPager>
   @override
   void dispose() {
     _tabController.dispose();
+    widget.pageController.dispose();
     super.dispose();
   }
 }

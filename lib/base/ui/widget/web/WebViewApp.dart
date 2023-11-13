@@ -3,30 +3,34 @@ import 'package:yxr_flutter_basic/base/extension/StringExtension.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import 'IWebViewFunction.dart';
-import 'WebViewFunction.dart';
+import 'WebController.dart';
 
-class WebView extends StatelessWidget implements IWebViewFunction {
-  final void Function(String url, String? title)? onPageStarted;
-  final void Function(String url, String? title)? onPageFinished;
-  final WebViewFunction function;
+class WebView extends StatefulWidget {
+  final WebController function;
   final String firstUrl;
 
-  WebView(
-      {super.key,
-      required this.firstUrl,
-      required this.function,
-      this.onPageStarted,
-      this.onPageFinished});
+  const WebView({super.key, required this.firstUrl, required this.function});
+
+  @override
+  State<StatefulWidget> createState() => _WebViewState();
+}
+
+class _WebViewState extends State<WebView> implements IWebViewFunction {
+  @override
+  void initState() {
+    widget.function.init(this);
+    widget.function.loadUrl(url: widget.firstUrl, firstLoad: true);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    function.init(this);
-    return WebViewWidget(controller: function.controller!);
+    return WebViewWidget(controller: widget.function.controller!);
   }
 
   @override
   Future<bool> goBack() async {
-    var controller = function.controller;
+    var controller = widget.function.controller;
     if (controller != null) {
       controller.goBack();
       return true;
@@ -36,7 +40,7 @@ class WebView extends StatelessWidget implements IWebViewFunction {
 
   @override
   Future<bool> canGoBack() async {
-    var controller = function.controller;
+    var controller = widget.function.controller;
     if (controller != null) {
       return controller.canGoBack();
     }
@@ -45,7 +49,7 @@ class WebView extends StatelessWidget implements IWebViewFunction {
 
   @override
   Future<bool> reload() async {
-    var controller = function.controller;
+    var controller = widget.function.controller;
     if (controller != null) {
       controller.reload();
       return true;
@@ -55,7 +59,7 @@ class WebView extends StatelessWidget implements IWebViewFunction {
 
   @override
   Future<String?> currentUrl() async {
-    var controller = function.controller;
+    var controller = widget.function.controller;
     if (controller != null) {
       return controller.currentUrl();
     }
@@ -64,9 +68,9 @@ class WebView extends StatelessWidget implements IWebViewFunction {
 
   @override
   Future<bool> loadUrl({required String url}) async {
-    var uri = await firstUrl.parseUri();
+    var uri = await widget.firstUrl.parseUri();
     if (uri != null) {
-      function.controller?.loadRequest(uri);
+      widget.function.controller?.loadRequest(uri);
       return true;
     }
     return false;

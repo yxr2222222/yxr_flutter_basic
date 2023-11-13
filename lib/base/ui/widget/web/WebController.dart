@@ -4,23 +4,17 @@ import 'package:yxr_flutter_basic/base/extension/ObjectExtension.dart';
 import 'package:yxr_flutter_basic/base/ui/widget/web/IWebViewFunction.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class WebViewFunction implements IWebViewFunction {
-  final void Function(String url, String? title)? onPageStarted;
-  final void Function(String url, String? title)? onPageFinished;
+class WebController implements IWebViewFunction {
+  void Function(String url, String? title)? onPageStarted;
+  void Function(String url, String? title)? onPageFinished;
   IWebViewFunction? _function;
   WebViewController? _controller;
-  bool _firstLoad = false;
+  bool _firstLoaded = false;
 
-  bool get firstLoad => _firstLoad;
+  bool get firstLoaded => _firstLoaded;
 
-  WebViewFunction({this.onPageStarted, this.onPageFinished});
-
-  WebViewController? get controller => _controller;
-
-  init(IWebViewFunction? function) {
-    _function = function;
-
-    if (_controller == null && (isAndroid() || isIOS())) {
+  WebController() {
+    if (isAndroid() || isIOS()) {
       _controller = WebViewController()
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
         ..setBackgroundColor(const Color(0xfff2f2f2))
@@ -36,6 +30,12 @@ class WebViewFunction implements IWebViewFunction {
           }
         }));
     }
+  }
+
+  WebViewController? get controller => _controller;
+
+  init(IWebViewFunction? function) {
+    _function = function;
   }
 
   @override
@@ -71,11 +71,14 @@ class WebViewFunction implements IWebViewFunction {
   }
 
   @override
-  Future<bool> loadUrl({required String url}) async {
+  Future<bool> loadUrl({required String url, bool firstLoad = false}) async {
     if (_function != null) {
+      if (firstLoad && _firstLoaded) {
+        return false;
+      }
       var loadUrl = await _function!.loadUrl(url: url);
       if (loadUrl) {
-        _firstLoad = true;
+        _firstLoaded = true;
       }
       return loadUrl;
     }

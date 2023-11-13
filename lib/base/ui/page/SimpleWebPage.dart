@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:yxr_flutter_basic/base/extension/ObjectExtension.dart';
 import 'package:yxr_flutter_basic/base/extension/StringExtension.dart';
 import 'package:yxr_flutter_basic/base/ui/page/BaseMultiStatePage.dart';
-import 'package:yxr_flutter_basic/base/ui/widget/web/WebViewFunction.dart';
+import 'package:yxr_flutter_basic/base/ui/widget/web/WebController.dart';
 import 'package:yxr_flutter_basic/base/ui/widget/web/WebViewPlatform.dart';
 import 'package:yxr_flutter_basic/base/vm/BaseMultiVM.dart';
 
@@ -22,14 +22,14 @@ class _SimpleWebState extends BaseMultiPageState<_SimpleWebVM, SimpleWebPage> {
   Widget createMultiContentWidget(
       BuildContext context, _SimpleWebVM viewModel) {
     return WebViewPlatform(
-        firstUrl: viewModel.firstUrl, function: viewModel.initFunction());
+        firstUrl: viewModel.firstUrl, function: viewModel.webController);
   }
 }
 
 class _SimpleWebVM extends BaseMultiVM {
   final String firstUrl;
   final String? title;
-  WebViewFunction? _function;
+  final WebController webController = WebController();
 
   _SimpleWebVM({required this.firstUrl, this.title});
 
@@ -54,13 +54,18 @@ class _SimpleWebVM extends BaseMultiVM {
       )
     ];
 
-    _function?.loadUrl(url: firstUrl);
+    webController.onPageStarted = (url, title) {
+      onPageStarted(url, title);
+    };
+    webController.onPageFinished = (url, title) {
+      onPageFinished(url, title);
+    };
   }
 
   @override
   Future<bool> onBackPressed() async {
-    if (_function != null && await _function!.canGoBack()) {
-      var goBack = await _function!.goBack();
+    if (await webController.canGoBack()) {
+      var goBack = await webController.goBack();
       if (!goBack) {
         return super.onBackPressed();
       }
@@ -71,35 +76,33 @@ class _SimpleWebVM extends BaseMultiVM {
 
   @override
   void onRetry() {
-    _function?.reload();
-  }
-
-  WebViewFunction initFunction() {
-    _function ??= WebViewFunction(
-      onPageStarted: (url, title) {
-        onPageStarted(url, title);
-      },
-      onPageFinished: (url, title) {
-        onPageFinished(url, title);
-      },
-    );
-    return _function!;
+    webController.reload();
   }
 
   void onPageStarted(String url, String? title) {
-    appbarController.appbarTitle = title;
-    showLoadingState(loadingTxt: "Loading...");
+    if (title != null) {
+      appbarController.appbarTitle = title;
+    }
+    if (isWeb()) {
+      showLoading(loadingTxt: "Loading...");
+    } else {
+      showLoadingState(loadingTxt: "Loading...");
+    }
   }
 
   void onPageFinished(String url, String? title) async {
-    appbarController.appbarTitle = title;
+    if (title != null) {
+      appbarController.appbarTitle = title;
+    }
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
       await url.launch();
-      if (url == await _function?.currentUrl()) {
-        await _function?.goBack();
+      if (url == await webController.currentUrl()) {
+        await webController.goBack();
       } else {
-        await _function?.reload();
+        await webController.reload();
       }
+    } else if (isWeb()) {
+      dismissLoading();
     } else {
       showContentState();
     }

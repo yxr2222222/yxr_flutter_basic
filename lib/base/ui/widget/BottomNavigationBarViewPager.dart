@@ -4,10 +4,12 @@ class BottomNavigationBarViewPager extends StatefulWidget {
   final List<ViewPagerData> viewPagerDataList;
   final Color normalTxtColor;
   final Color checkedTxtColor;
+  final Color backgroundColor;
   final double normalTxtSize;
   final double checkedTxtSize;
   final bool normalTxtShow;
   final bool checkedTxtShow;
+  final bool preNextPage;
   final int initIndex;
   final PageController pageController;
   final BottomNavigationBarType type;
@@ -22,6 +24,7 @@ class BottomNavigationBarViewPager extends StatefulWidget {
   /// [checkedTxtSize] 底部选中控件的文字大小
   /// [normalTxtShow] 底部未选中控件的文字是否展示
   /// [checkedTxtShow] 底部选中控件的文字是否展示
+  /// [preNextPage] 是否预加载上一页和下一页
   /// [initIndex] 默认展示第几个页面
   /// [pageController] 页面控制器
   /// [type] 底部控件排放类型[BottomNavigationBarType.fixed]
@@ -31,10 +34,12 @@ class BottomNavigationBarViewPager extends StatefulWidget {
       required this.viewPagerDataList,
       Color? normalTxtColor,
       Color? checkedTxtColor,
+      Color? backgroundColor,
       this.normalTxtSize = 12.0,
       this.checkedTxtSize = 14.0,
       this.normalTxtShow = true,
       this.checkedTxtShow = true,
+      this.preNextPage = false,
       this.initIndex = 0,
       this.onPageChanged,
       PageController? pageController,
@@ -42,8 +47,9 @@ class BottomNavigationBarViewPager extends StatefulWidget {
       bool? canUserScroll})
       : normalTxtColor = normalTxtColor ?? const Color(0xff999999),
         checkedTxtColor = checkedTxtColor ?? const Color(0xff333333),
-        pageController =
-            pageController ?? PageController(initialPage: initIndex, keepPage: true),
+        backgroundColor = backgroundColor ?? Colors.white,
+        pageController = pageController ??
+            PageController(initialPage: initIndex, keepPage: true),
         type = type ?? BottomNavigationBarType.fixed,
         canUserScroll = canUserScroll ?? true;
 
@@ -73,6 +79,12 @@ class _BottomNavigationBarViewPagerState
   }
 
   @override
+  void dispose() {
+    widget.pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     List<BottomNavigationBarItem> bottomNavigationBarItemList = [];
     for (var element in widget.viewPagerDataList) {
@@ -90,12 +102,15 @@ class _BottomNavigationBarViewPagerState
                 physics: widget.canUserScroll
                     ? null
                     : const NeverScrollableScrollPhysics(),
+                allowImplicitScrolling: widget.preNextPage,
                 onPageChanged: (index) {
                   currIndex = index;
                   widget.onPageChanged?.call(index);
                 })),
         Theme(
           data: ThemeData(
+            bottomNavigationBarTheme: BottomNavigationBarThemeData(
+                backgroundColor: widget.backgroundColor),
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
           ),

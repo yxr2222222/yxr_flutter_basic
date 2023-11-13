@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:yxr_flutter_basic/base/extension/ObjectExtension.dart';
 import 'package:yxr_flutter_basic/base/extension/StringExtension.dart';
 import 'package:yxr_flutter_basic/base/http/cache/CacheMode.dart';
@@ -10,7 +9,6 @@ import 'package:yxr_flutter_basic/base/http/interceptor/LoggingInterceptor.dart'
 import 'package:yxr_flutter_basic/base/http/cache/HttpCacheInterceptor.dart';
 import 'package:yxr_flutter_basic/base/http/interceptor/RequestInterceptor.dart';
 import '../model/BaseResp.dart';
-import '../util/StorageUtil.dart';
 import 'cache/CacheConfig.dart';
 import 'cache/CacheManager.dart';
 import 'exception/CstException.dart';
@@ -57,10 +55,6 @@ class HttpManager {
       Map<String, dynamic>? publicQueryParams,
       CacheConfig? cacheConfig,
       List<Interceptor>? interceptors}) async {
-    WidgetsFlutterBinding.ensureInitialized();
-
-    // 初始化k-v持久化存储
-    await StorageUtil.init();
 
     _debug = debug;
     _respConfig = respConfig ?? RespConfig();
@@ -155,7 +149,7 @@ class HttpManager {
     String? customCacheKey,
   }) async {
     try {
-      Response<dynamic> response = await requestResponse<dynamic>(
+      Response<dynamic> response = await requestResponse(
           path: path,
           reqType: reqType,
           params: params,
@@ -175,7 +169,7 @@ class HttpManager {
   }
 
   /// 需要异步调用的网络请求
-  Future<Response<T>> requestResponse<T>({
+  Future<Response<dynamic>> requestResponse({
     required String path,
     ReqType reqType = ReqType.get,
     Map<String, dynamic>? params,
@@ -191,7 +185,7 @@ class HttpManager {
         cacheTime: cacheTime,
         customCacheKey: customCacheKey);
 
-    Future<Response<T>> future;
+    Future<Response<dynamic>> future;
     switch (reqType) {
       case ReqType.post:
         {
@@ -363,7 +357,7 @@ class HttpManager {
     if (code != successCode) {
       return BaseResp(false,
           error: CstException(
-              code?.parseInt(defaultValue: -1) ?? -1, msg ?? "业务错误码不等于业务成功码"));
+              code.parseInt(defaultValue: -1) ?? -1, msg ?? "业务错误码不等于业务成功码"));
     }
 
     return BaseResp(true, data: data);

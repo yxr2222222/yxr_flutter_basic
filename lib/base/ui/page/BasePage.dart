@@ -10,9 +10,10 @@ import '../widget/dialog/DefaultLoadingDialog.dart';
 
 abstract class BasePage<VM extends BaseVM> extends StatefulWidget {
   final VM viewModel;
+  final bool lazyCreate;
   final PageLifecycle lifecycle = PageLifecycle();
 
-  BasePage({super.key, required this.viewModel});
+  BasePage({super.key, required this.viewModel, this.lazyCreate = false});
 }
 
 abstract class BasePageState<VM extends BaseVM, W extends BasePage<VM>>
@@ -21,11 +22,9 @@ abstract class BasePageState<VM extends BaseVM, W extends BasePage<VM>>
 
   VM get viewModel => _viewModel;
 
-  late BuildContext _context;
   BuildContext? _currLoading;
 
   late VisibilityDetector _detector;
-
 
   bool _created = false;
   bool _resumed = false;
@@ -35,6 +34,8 @@ abstract class BasePageState<VM extends BaseVM, W extends BasePage<VM>>
   void initState() {
     VisibilityDetectorController.instance.updateInterval = Duration.zero;
     this._viewModel = widget.viewModel;
+    // 初始化ViewModel
+    this.viewModel.init(context);
 
     this._detector = VisibilityDetector(
         key: UniqueKey(),
@@ -45,8 +46,7 @@ abstract class BasePageState<VM extends BaseVM, W extends BasePage<VM>>
         ),
         // page可见性回调，用于处理page的onPause、onResume事件
         onVisibilityChanged: (visibilityInfo) {
-          var visiblePercentage =
-              visibilityInfo.visibleFraction * 100;
+          var visiblePercentage = visibilityInfo.visibleFraction * 100;
           // double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
           if (visiblePercentage > 0) {
             _onResume(false);
@@ -55,11 +55,15 @@ abstract class BasePageState<VM extends BaseVM, W extends BasePage<VM>>
           }
         });
 
-    // 添加第一次绘制完成监听
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      // 绘制完成之后检查是否需要执行onCreate
-      _onCreate(_context);
-    });
+    if (widget.lazyCreate) {
+      // 添加第一次绘制完成监听
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        // 绘制完成之后检查是否需要执行onCreate
+        _onCreate(context);
+      });
+    } else {
+      _onCreate(context);
+    }
 
     // App的生命监听
     _lifecycleListener = AppLifecycleListener(
@@ -87,9 +91,6 @@ abstract class BasePageState<VM extends BaseVM, W extends BasePage<VM>>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    // 初始化ViewModel
-    this.viewModel.init(context);
-    this._context = context;
 
     /// 添加拦截控制，将backPress交给viewModel.onBackPressed处理
     return WillPopScope(
@@ -215,7 +216,7 @@ abstract class BasePageState<VM extends BaseVM, W extends BasePage<VM>>
     dismissLoading();
     _currLoading = context;
     showDialog(
-        context: _context,
+        context: context,
         barrierColor: barrierColor,
         barrierDismissible: barrierDismissible,
         builder: (context) {
