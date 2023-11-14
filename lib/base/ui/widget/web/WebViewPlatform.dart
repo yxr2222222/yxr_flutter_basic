@@ -5,13 +5,13 @@ import 'WebController.dart';
 
 class WebViewPlatform extends StatefulWidget {
   final String firstUrl;
-  final WebController function;
+  final WebController controller;
 
   /// 内置Web控件，支持Android、iOS、web
   /// [firstUrl] 首次加载的网页
-  /// [function] 网页操作配置
+  /// [controller] 网页操作配置
   const WebViewPlatform(
-      {super.key, required this.firstUrl, required this.function});
+      {super.key, required this.firstUrl, required this.controller});
 
   @override
   State<StatefulWidget> createState() => _WebViewPlatformState();
@@ -22,7 +22,7 @@ class _WebViewPlatformState extends State<WebViewPlatform> {
   Widget build(BuildContext context) {
     return platform.WebView(
       firstUrl: widget.firstUrl,
-      function: widget.function,
+      controller: widget.controller,
     );
   }
 }

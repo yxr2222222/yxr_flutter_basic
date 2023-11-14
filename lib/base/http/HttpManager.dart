@@ -55,7 +55,6 @@ class HttpManager {
       Map<String, dynamic>? publicQueryParams,
       CacheConfig? cacheConfig,
       List<Interceptor>? interceptors}) async {
-
     _debug = debug;
     _respConfig = respConfig ?? RespConfig();
     publicHeaders?.forEach((key, value) {
@@ -153,6 +152,7 @@ class HttpManager {
           path: path,
           reqType: reqType,
           params: params,
+          respConfig: respConfig,
           options: options,
           body: body,
           cancelToken: cancelToken,
@@ -160,7 +160,7 @@ class HttpManager {
           cacheTime: cacheTime,
           customCacheKey: customCacheKey);
 
-      return _parseResponse(response, respConfig, onFromJson);
+      return _parseResponse(response, onFromJson);
     } on Exception catch (e) {
       return BaseResp(false, error: CstException.buildException(e));
     } on Error catch (e) {
@@ -173,6 +173,7 @@ class HttpManager {
     required String path,
     ReqType reqType = ReqType.get,
     Map<String, dynamic>? params,
+    RespConfig? respConfig,
     Options? options,
     Object? body,
     CancelToken? cancelToken,
@@ -180,7 +181,7 @@ class HttpManager {
     int? cacheTime,
     String? customCacheKey,
   }) async {
-    Options option = _copyOptions(options,
+    Options option = _copyOptions(respConfig, options,
         cacheMode: cacheMode,
         cacheTime: cacheTime,
         customCacheKey: customCacheKey);
@@ -301,7 +302,7 @@ class HttpManager {
   }
 
   /// 复制缓存options
-  Options _copyOptions(Options? options,
+  Options _copyOptions(RespConfig? respConfig, Options? options,
       {CacheMode? cacheMode, int? cacheTime, String? customCacheKey}) {
     Options requestOptions = options ?? Options();
     requestOptions = requestOptions.copyWith(
@@ -309,18 +310,24 @@ class HttpManager {
       extra: {
         CacheStrategy.CACHE_MODE: cacheMode ?? CacheMode.ONLY_NETWORK,
         CacheStrategy.CACHE_TIME: cacheTime,
-        CacheStrategy.CUSTOM_CACHE_KEY: customCacheKey
+        CacheStrategy.CUSTOM_CACHE_KEY: customCacheKey,
+        RespConfig.option_filed_code:
+            respConfig?.filedCode ?? _respConfig.filedCode,
+        RespConfig.option_filed_msg:
+            respConfig?.filedMsg ?? _respConfig.filedMsg,
+        RespConfig.option_filed_success_code:
+            respConfig?.successCode ?? _respConfig.successCode,
       },
     );
     return requestOptions;
   }
 
   /// 解析请求的结果
-  BaseResp<T> _parseResponse<T>(
-      Response response, RespConfig? respConfig, OnFromJson<T>? onFromJson) {
-    String filedCode = respConfig?.filedCode ?? _respConfig.filedCode;
-    String filedMsg = respConfig?.filedMsg ?? _respConfig.filedMsg;
-    String successCode = respConfig?.successCode ?? _respConfig.successCode;
+  BaseResp<T> _parseResponse<T>(Response response, OnFromJson<T>? onFromJson) {
+    var extra = response.requestOptions.extra;
+    String filedCode = extra[RespConfig.option_filed_code];
+    String filedMsg = extra[RespConfig.option_filed_msg];
+    String successCode = extra[RespConfig.option_filed_success_code];
 
     String code;
     String? msg;
@@ -343,7 +350,7 @@ class HttpManager {
       Map<String, dynamic> result = jsonDecode(utf8.decode(body));
 
       dynamic cd = result[filedCode];
-      code =  cd?.toString() ?? "-1";
+      code = cd?.toString() ?? "-1";
       msg = result[filedMsg];
 
       if (code == successCode) {

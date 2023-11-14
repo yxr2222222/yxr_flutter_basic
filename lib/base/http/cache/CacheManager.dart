@@ -9,6 +9,8 @@ import 'package:yxr_flutter_basic/base/http/cache/HttpCacheObj.dart';
 import 'package:yxr_flutter_basic/base/util/Log.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../model/RespConfig.dart';
+
 class CacheManager {
   static final CacheManager _instance = CacheManager._internal();
 
@@ -83,17 +85,26 @@ class CacheManager {
           Uint8List bytes = Uint8List.fromList(data);
           String cacheValue = utf8.decode(bytes);
 
-          int cacheTime =
-              response.requestOptions.extra[CacheStrategy.CACHE_TIME] ??
-                  defaultCacheTime;
-          int expireTime = DateTime.now().millisecondsSinceEpoch + cacheTime;
+          Map<String, dynamic> result = jsonDecode(cacheValue);
 
-          // 先删除老的缓存
-          await _database?.delete("HttpCacheObj",
-              where: "cacheKey = ?", whereArgs: [cacheKey]);
+          var extra = response.requestOptions.extra;
+          String filedCode = extra[RespConfig.option_filed_code];
+          String successCode = extra[RespConfig.option_filed_success_code];
 
-          var cache = HttpCacheObj(cacheKey, cacheValue, expireTime);
-          await _database?.insert("HttpCacheObj", cache.toJson());
+          dynamic cd = result[filedCode];
+          String code = cd?.toString() ?? "-1";
+
+          if (code == successCode) {
+            int cacheTime = extra[CacheStrategy.CACHE_TIME] ?? defaultCacheTime;
+            int expireTime = DateTime.now().millisecondsSinceEpoch + cacheTime;
+
+            // 先删除老的缓存
+            await _database?.delete("HttpCacheObj",
+                where: "cacheKey = ?", whereArgs: [cacheKey]);
+
+            var cache = HttpCacheObj(cacheKey, cacheValue, expireTime);
+            await _database?.insert("HttpCacheObj", cache.toJson());
+          }
         }
       }
     } catch (e) {

@@ -7,10 +7,10 @@ import 'package:yxr_flutter_basic/base/util/Log.dart';
 import 'WebController.dart';
 
 class WebView extends StatefulWidget {
-  final WebController function;
+  final WebController controller;
   final String firstUrl;
 
-  const WebView({super.key, required this.firstUrl, required this.function});
+  const WebView({super.key, required this.firstUrl, required this.controller});
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
@@ -23,11 +23,11 @@ class _WebViewState extends State<WebView> implements IWebViewFunction {
 
   @override
   void initState() {
-    widget.function.init(this);
+    widget.controller.init(this);
     loadListener = (event) {
-      widget.function.onPageFinished?.call(widget.firstUrl, null);
+      widget.controller.onPageFinished?.call(widget.firstUrl, null);
     };
-    widget.function.loadUrl(url: widget.firstUrl, firstLoad: true);
+    widget.controller.loadUrl(url: widget.firstUrl, firstLoad: true);
     super.initState();
   }
 
@@ -57,9 +57,9 @@ class _WebViewState extends State<WebView> implements IWebViewFunction {
             _iFrameElement =
                 ui.platformViewRegistry.getViewById(viewId) as IFrameElement?;
             _iFrameElement?.addEventListener("load", loadListener);
-            if (!widget.function.firstLoaded) {
+            if (!widget.controller.firstLoaded) {
               Log.d("onPageStarted..........");
-              widget.function.onPageStarted?.call(widget.firstUrl, null);
+              widget.controller.onPageStarted?.call(widget.firstUrl, null);
               _iFrameElement?.src = widget.firstUrl;
             }
           },
@@ -100,7 +100,7 @@ class _WebViewState extends State<WebView> implements IWebViewFunction {
   Future<bool> loadUrl({required String url}) async {
     if (_iFrameElement != null) {
       Log.d("onPageStarted..........");
-      widget.function.onPageStarted?.call(url, null);
+      widget.controller.onPageStarted?.call(url, null);
       _iFrameElement!.src = url;
       return true;
     }

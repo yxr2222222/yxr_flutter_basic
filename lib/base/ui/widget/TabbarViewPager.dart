@@ -9,6 +9,7 @@ class TabbarViewPager extends StatefulWidget {
   final double tabbarWidth;
   final bool tabbarIsScrollable;
   final Color tabbarIndicatorColor;
+  final Color dividerColor;
   final TabBarIndicatorSize tabbarIndicatorSize;
   final TextStyle tabbarLabelStyle;
   final TextStyle tabbarUnselectedLabelStyle;
@@ -24,6 +25,7 @@ class TabbarViewPager extends StatefulWidget {
       this.tabbarIsScrollable = true,
       this.preNextPage = false,
       this.tabbarIndicatorColor = Colors.blue,
+      this.dividerColor = Colors.transparent,
       this.tabbarIndicatorSize = TabBarIndicatorSize.label,
       this.tabbarLabelStyle = const TextStyle(
           color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
@@ -88,6 +90,7 @@ class _TabbarViewPagerState extends State<TabbarViewPager>
           child: DefaultTabController(
               length: widget.tabbarDataList.length,
               child: TabBar(
+                dividerColor: widget.dividerColor,
                 controller: _tabController,
                 isScrollable: widget.tabbarIsScrollable,
                 tabs: widget.getTabs(),

@@ -18,9 +18,9 @@ class BaseApi {
   /// [onFromJson] 解析Json的方法回调
   /// [reqType] 请求类型，默认是[ReqType.get]
   /// [params] 请求参数，拼接在path后面的
+  /// [respConfig] 自定义请求配置，用来配置解析内容的自定义json字段
   /// [body] 放在body中的请求参数
   /// [cancelToken] 用来取消请求的标识，不需要自己处理可不传，api内部已经处理
-  /// [respConfig] 自定义请求配置，用来配置解析内容的自定义json字段
   /// [cacheMode] 缓存模式，默认[CacheMode.ONLY_NETWORK]，生效前提是[HttpManager]init时候已经传入了[CacheConfig]
   /// [cacheTime] 缓存时长，单位毫秒，生效前提如上，没有传时默认使用[CacheConfig]的默认配置
   /// [customCacheKey] 当前接口请求的自定义缓存key，生效前提如上，没有传入自动根据接口、参数生成缓存key
@@ -29,10 +29,10 @@ class BaseApi {
     required OnFromJson<T>? onFromJson,
     ReqType reqType = ReqType.get,
     Map<String, dynamic>? params,
+    RespConfig? respConfig,
     Options? options,
     Object? body,
     CancelToken? cancelToken,
-    RespConfig? respConfig,
     CacheMode? cacheMode = CacheMode.ONLY_NETWORK,
     int? cacheTime,
     String? customCacheKey,
@@ -44,10 +44,10 @@ class BaseApi {
         onFromJson: onFromJson,
         reqType: reqType,
         params: params,
+        respConfig: respConfig,
         options: options,
         body: body,
         cancelToken: cancelToken,
-        respConfig: respConfig,
         cacheMode: cacheMode,
         cacheTime: cacheTime,
         customCacheKey: customCacheKey);
@@ -57,6 +57,7 @@ class BaseApi {
   /// [path] 接口地址
   /// [reqType] 请求类型，默认是[ReqType.get]
   /// [params] 请求参数，拼接在path后面的
+  /// [respConfig] 自定义请求配置，用来配置解析内容的自定义json字段
   /// [body] 放在body中的请求参数
   /// [cancelToken] 用来取消请求的标识，不需要自己处理可不传，api内部已经处理
   /// [cacheMode] 缓存模式，默认[CacheMode.ONLY_NETWORK]，生效前提是[HttpManager]init时候已经传入了[CacheConfig]
@@ -66,6 +67,7 @@ class BaseApi {
     required String path,
     ReqType reqType = ReqType.get,
     Map<String, dynamic>? params,
+    RespConfig? respConfig,
     Options? options,
     Object? body,
     CancelToken? cancelToken,
@@ -80,6 +82,7 @@ class BaseApi {
         path: path,
         reqType: reqType,
         params: params,
+        respConfig: respConfig,
         options: options,
         body: body,
         cancelToken: cancelToken,

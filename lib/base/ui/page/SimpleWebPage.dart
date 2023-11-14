@@ -22,7 +22,7 @@ class _SimpleWebState extends BaseMultiPageState<_SimpleWebVM, SimpleWebPage> {
   Widget createMultiContentWidget(
       BuildContext context, _SimpleWebVM viewModel) {
     return WebViewPlatform(
-        firstUrl: viewModel.firstUrl, function: viewModel.webController);
+        firstUrl: viewModel.firstUrl, controller: viewModel.webController);
   }
 }
 
