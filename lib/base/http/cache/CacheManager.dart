@@ -88,8 +88,9 @@ class CacheManager {
           Map<String, dynamic> result = jsonDecode(cacheValue);
 
           var extra = response.requestOptions.extra;
-          String filedCode = extra[RespConfig.option_filed_code];
-          String successCode = extra[RespConfig.option_filed_success_code];
+          String filedCode = extra[RespConfig.option_filed_code] ?? "";
+          String successCode =
+              extra[RespConfig.option_filed_success_code] ?? "";
 
           dynamic cd = result[filedCode];
           String code = cd?.toString() ?? "-1";

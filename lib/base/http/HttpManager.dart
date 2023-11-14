@@ -160,7 +160,7 @@ class HttpManager {
           cacheTime: cacheTime,
           customCacheKey: customCacheKey);
 
-      return _parseResponse(response, onFromJson);
+      return _parseResponse(response, respConfig, onFromJson);
     } on Exception catch (e) {
       return BaseResp(false, error: CstException.buildException(e));
     } on Error catch (e) {
@@ -323,11 +323,11 @@ class HttpManager {
   }
 
   /// 解析请求的结果
-  BaseResp<T> _parseResponse<T>(Response response, OnFromJson<T>? onFromJson) {
-    var extra = response.requestOptions.extra;
-    String filedCode = extra[RespConfig.option_filed_code];
-    String filedMsg = extra[RespConfig.option_filed_msg];
-    String successCode = extra[RespConfig.option_filed_success_code];
+  BaseResp<T> _parseResponse<T>(
+      Response response, RespConfig? respConfig, OnFromJson<T>? onFromJson) {
+    String filedCode = respConfig?.filedCode ?? _respConfig.filedCode;
+    String filedMsg = respConfig?.filedMsg ?? _respConfig.filedMsg;
+    String successCode = respConfig?.successCode ?? _respConfig.successCode;
 
     String code;
     String? msg;
