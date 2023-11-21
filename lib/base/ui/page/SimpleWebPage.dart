@@ -6,15 +6,17 @@ import 'package:yxr_flutter_basic/base/ui/widget/web/WebController.dart';
 import 'package:yxr_flutter_basic/base/ui/widget/web/WebViewPlatform.dart';
 import 'package:yxr_flutter_basic/base/vm/BaseMultiVM.dart';
 
-class SimpleWebPage extends BaseMultiPage<_SimpleWebVM> {
+class SimpleWebPage extends BaseMultiPage {
+  final String url;
+  final String? title;
+
   /// 简易的内置Web页面，由于Web端通过iFrame的形式实现，有些功能没有完善
   /// [url] 网页地址
   /// [title] appbar标题
-  SimpleWebPage({super.key, required String url, String? title})
-      : super(viewModel: _SimpleWebVM(firstUrl: url, title: title));
+  SimpleWebPage({super.key, required this.url, this.title});
 
   @override
-  State<StatefulWidget> createState() => _SimpleWebState();
+  State<BaseMultiPage> createState() => _SimpleWebState();
 }
 
 class _SimpleWebState extends BaseMultiPageState<_SimpleWebVM, SimpleWebPage> {
@@ -24,6 +26,10 @@ class _SimpleWebState extends BaseMultiPageState<_SimpleWebVM, SimpleWebPage> {
     return WebViewPlatform(
         firstUrl: viewModel.firstUrl, controller: viewModel.webController);
   }
+
+  @override
+  _SimpleWebVM createViewModel() =>
+      _SimpleWebVM(firstUrl: widget.url, title: widget.url);
 }
 
 class _SimpleWebVM extends BaseMultiVM {

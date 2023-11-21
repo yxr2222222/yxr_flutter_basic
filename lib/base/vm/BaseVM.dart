@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:yxr_flutter_basic/base/extension/BuildContextExtension.dart';
+import 'package:yxr_flutter_basic/base/model/value/MultiString.dart';
 import 'package:yxr_flutter_basic/base/ui/page/BasePage.dart';
 import 'package:yxr_flutter_basic/base/util/Log.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -30,16 +31,13 @@ abstract class BaseVM {
   BuildContext? get context => _context;
 
   /// onCreate生命周期
-  void onCreate() {
-  }
+  void onCreate() {}
 
   /// onResume生命周期
-  void onResume() {
-  }
+  void onResume() {}
 
   /// onPause生命周期
-  void onPause() {
-  }
+  void onPause() {}
 
   /// onDestroy生命周期
   void onDestroy() {
@@ -261,6 +259,10 @@ abstract class BaseVM {
       _apiList.add(api);
     }
     return api;
+  }
+
+  String getString(MultiString multiString) {
+    return multiString.getString(context);
   }
 
   void showKeyboard(FocusNode focusNode) {

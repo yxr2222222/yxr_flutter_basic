@@ -32,6 +32,16 @@ extension ObjectExtension on Object {
     return !kIsWeb && Platform.isFuchsia;
   }
 
+  bool isLateInitialization() {
+    try {
+      hashCode;
+      return true;
+    } catch (e) {
+      var message = e.toString();
+      return !message.startsWith("LateInitializationError");
+    }
+  }
+
   /// 获取下载路径
   /// [filename] 文件的名字，需要带上后缀(例如: eg.png)
   Future<File> getDownloadPath({required String filename}) async {

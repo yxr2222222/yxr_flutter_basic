@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yxr_flutter_basic/base/extension/BuildContextExtension.dart';
 import 'package:yxr_flutter_basic/base/extension/ObjectExtension.dart';
+import 'package:yxr_flutter_basic/base/model/value/MultiString.dart';
 import 'package:yxr_flutter_basic/base/ui/widget/lifecycle/PageLifecycle.dart';
 import 'package:yxr_flutter_basic/base/vm/BaseVM.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,16 +9,18 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 import '../widget/dialog/DefaultLoadingDialog.dart';
 
-abstract class BasePage<VM extends BaseVM> extends StatefulWidget {
-  final VM viewModel;
+abstract class BasePage extends StatefulWidget {
   final bool lazyCreate;
   final PageLifecycle lifecycle = PageLifecycle();
 
-  BasePage({super.key, required this.viewModel, this.lazyCreate = false});
+  BasePage({super.key, this.lazyCreate = false});
+
+  @override
+  State<BasePage> createState();
 }
 
-abstract class BasePageState<VM extends BaseVM, W extends BasePage<VM>>
-    extends State<W> with AutomaticKeepAliveClientMixin {
+abstract class BasePageState<VM extends BaseVM, T extends BasePage>
+    extends State<T> with AutomaticKeepAliveClientMixin {
   late VM _viewModel;
 
   VM get viewModel => _viewModel;
@@ -33,9 +36,9 @@ abstract class BasePageState<VM extends BaseVM, W extends BasePage<VM>>
   @override
   void initState() {
     VisibilityDetectorController.instance.updateInterval = Duration.zero;
-    this._viewModel = widget.viewModel;
+    this._viewModel = createViewModel();
     // 初始化ViewModel
-    this.viewModel.init(context);
+    this._viewModel.init(context);
 
     this._detector = VisibilityDetector(
         key: UniqueKey(),
@@ -120,6 +123,10 @@ abstract class BasePageState<VM extends BaseVM, W extends BasePage<VM>>
     _onPause(false);
     _onDestroy();
     super.dispose();
+  }
+
+  String getString(MultiString multiString) {
+    return viewModel.getString(multiString);
   }
 
   /// onCreate生命周期判断
@@ -254,6 +261,11 @@ abstract class BasePageState<VM extends BaseVM, W extends BasePage<VM>>
     }
   }
 
+  /// 创建ViewModel
+  VM createViewModel();
+
   /// 创建内容控件，交由子类自行实现
+  @protected
   Widget createContentWidget(BuildContext context, VM viewModel);
+
 }

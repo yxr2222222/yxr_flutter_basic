@@ -29,6 +29,7 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
       url_launcher: ^6.2.1
       package_info_plus: ^4.2.0
       cached_network_image: ^3.3.0
+      flutter_staggered_grid_view: ^0.7.0
       build_runner: ^2.3.3
       json_serializable: ^6.6.0
    ```

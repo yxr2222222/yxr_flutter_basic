@@ -1,5 +1,5 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:yxr_flutter_basic/base/model/controller/AppbarController.dart';
 import 'package:yxr_flutter_basic/base/model/controller/ViewStateController.dart';
 import 'package:yxr_flutter_basic/base/model/em/ViewState.dart';
@@ -8,7 +8,7 @@ import '../../util/GetBuilderUtil.dart';
 import '../../vm/BaseMultiVM.dart';
 import 'BasePage.dart';
 
-abstract class BaseMultiPage<VM extends BaseMultiVM> extends BasePage<VM> {
+abstract class BaseMultiPage extends BasePage {
   final double appbarHeight;
   final bool isNeedAppBar;
   final bool extendBodyBehindAppBar;
@@ -16,35 +16,46 @@ abstract class BaseMultiPage<VM extends BaseMultiVM> extends BasePage<VM> {
 
   BaseMultiPage(
       {super.key,
-      required super.viewModel,
       this.appbarHeight = 56.0,
       this.isNeedAppBar = true,
       this.extendBodyBehindAppBar = false,
       this.resizeToAvoidBottomInset = false});
+
+  @override
+  State<BaseMultiPage> createState();
 }
 
 abstract class BaseMultiPageState<VM extends BaseMultiVM,
-    T extends BaseMultiPage<VM>> extends BasePageState<VM, T> {
+    T extends BaseMultiPage> extends BasePageState<VM, T> {
   Widget? _contentView, _loadingView, _errorView, _emptyView;
 
   @override
   Widget createContentWidget(BuildContext context, VM viewModel) => Scaffold(
-      resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
-      appBar: widget.isNeedAppBar
-          ? PreferredSize(
-              preferredSize:
-                  Size(MediaQuery.of(context).size.width, widget.appbarHeight),
-              child: createAppBar(context, viewModel),
-            )
-          : null,
-      extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
-      body: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(color: Color(0xfff2f2f2)),
-          child: GetBuilderUtil.builder(
-              (controller) => _buildWidget(context, viewModel, controller),
-              init: viewModel.stateController)));
+        resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
+        appBar: widget.isNeedAppBar
+            ? PreferredSize(
+                preferredSize: Size(
+                    MediaQuery.of(context).size.width, widget.appbarHeight),
+                child: createAppBar(context, viewModel),
+              )
+            : null,
+        extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
+        body: Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(color: Color(0xfff2f2f2)),
+            child: GetBuilderUtil.builder(
+                (controller) => _buildWidget(context, viewModel, controller),
+                init: viewModel.stateController)),
+        onEndDrawerChanged: createOnEndDrawerChanged(),
+        onDrawerChanged: createOnDrawerChanged(),
+        drawer: createDrawer(),
+        endDrawer: createEndDraw(),
+        drawerDragStartBehavior: createDrawerDragStartBehavior(),
+        drawerEdgeDragWidth: createDrawerEdgeDragWidth(),
+        drawerEnableOpenDragGesture: createDrawerEnableOpenDragGesture(),
+        endDrawerEnableOpenDragGesture: createEndDrawerEnableOpenDragGesture(),
+      );
 
   /// 根据不同状态来显示不同的视图
   Widget _buildWidget(
@@ -66,6 +77,7 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
   }
 
   /// 创建AppBar控件，子类可override自定义
+  @protected
   Widget createAppBar(BuildContext context, VM viewModel) {
     return GetBuilderUtil.builder<AppbarController>(
         (controller) => AppBar(
@@ -90,6 +102,7 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
   }
 
   /// 创建Loading视图，子类可override自定义
+  @protected
   Widget createLoadingView(
       BuildContext context, VM viewModel, ViewStateController controller) {
     return SizedBox(
@@ -126,6 +139,7 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
   }
 
   /// 创建错误视图，子类可override自定义
+  @protected
   Widget createErrorView(
       BuildContext context, VM viewModel, ViewStateController controller) {
     return SizedBox(
@@ -171,6 +185,7 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
   }
 
   /// 创建空视图，子类可override自定义
+  @protected
   Widget createEmptyView(
       BuildContext context, VM viewModel, ViewStateController controller) {
     return SizedBox(
@@ -215,6 +230,55 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
     );
   }
 
+  /// 创建左边的侧拉栏视图
+  @protected
+  Widget? createDrawer() {
+    return null;
+  }
+
+  /// 创建右边的侧拉栏视图
+  @protected
+  Widget? createEndDraw() {
+    return null;
+  }
+
+  /// 侧拉栏拉出的开始为止
+  @protected
+  DragStartBehavior createDrawerDragStartBehavior() {
+    return DragStartBehavior.start;
+  }
+
+  /// 距离两边多少距离可以拉出侧拉栏
+  @protected
+  double? createDrawerEdgeDragWidth() {
+    return 64;
+  }
+
+  /// 设置左边的侧拉栏是否支持手势拉出
+  @protected
+  bool createDrawerEnableOpenDragGesture() {
+    return true;
+  }
+
+  /// 设置右边的侧拉栏是否支持手势拉出
+  @protected
+  bool createEndDrawerEnableOpenDragGesture() {
+    return true;
+  }
+
+  /// 设置左边侧拉栏的变化回调
+  @protected
+  DrawerCallback? createOnEndDrawerChanged() {
+    return null;
+  }
+
+  /// 设置右边侧拉栏的变化回调
+  @protected
+  DrawerCallback? createOnDrawerChanged() {
+    return null;
+  }
+
   /// 创建内容控件，抽象方法，子类必须实现
+  @protected
   Widget createMultiContentWidget(BuildContext context, VM viewModel);
 }

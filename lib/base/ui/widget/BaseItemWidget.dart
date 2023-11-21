@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import '../../vm/BaseListVM.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class BaseItemWidget<T> extends StatefulWidget {
   final ChildItemBuilder<T> childItemBuilder;
@@ -12,12 +12,13 @@ class BaseItemWidget<T> extends StatefulWidget {
   /// [item] item数据
   /// [index] 列表中的下标位置
   /// [onItemClick] item点击方法回调
-  const BaseItemWidget(
-      {super.key,
-      required this.childItemBuilder,
-      required this.item,
-      required this.index,
-      this.onItemClick});
+  const BaseItemWidget({
+    super.key,
+    required this.childItemBuilder,
+    required this.item,
+    required this.index,
+    this.onItemClick,
+  });
 
   @override
   State<StatefulWidget> createState() => BaseItemWidgetState<T>();
@@ -46,3 +47,24 @@ class BaseItemWidgetState<T> extends State<BaseItemWidget<T>> {
     setState(() {});
   }
 }
+
+class StaggeredGridTileConfig{
+  /// The number of cells that this tile takes along the cross axis.
+  final int crossAxisCellCount;
+
+  /// The number of cells that this tile takes along the main axis.
+  final num mainAxisCellCount;
+
+  StaggeredGridTileConfig({required this.crossAxisCellCount, required this.mainAxisCellCount});
+}
+
+/// ListView/GridView item构建方法回调
+typedef ChildItemBuilder<T> = Widget Function(
+    BaseItemWidgetState<T> item, BuildContext context);
+
+/// ListView/GridView item构建方法回调
+typedef StaggeredGridTileBuilder<T> = StaggeredGridTileConfig Function(T item);
+
+/// ListView/GridView item被点击方法回调
+typedef OnItemClick<T> = void Function(
+    BaseItemWidgetState<T> item, BuildContext context);

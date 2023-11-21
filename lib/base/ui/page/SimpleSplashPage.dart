@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:yxr_flutter_basic/base/extension/BuildContextExtension.dart';
 import 'package:yxr_flutter_basic/base/extension/ObjectExtension.dart';
 import 'package:yxr_flutter_basic/base/extension/StringExtension.dart';
@@ -16,7 +15,7 @@ import 'package:yxr_flutter_basic/base/vm/BaseVM.dart';
 import '../../config/ColorConfig.dart';
 import '../../config/PublicKeyConfig.dart';
 
-class SimpleSplashPage extends BasePage<_SimpleSplashVM> {
+class SimpleSplashPage extends BasePage {
   final PrivacyContent privacyContent;
   final Future<SplashContent> Function(BaseVM viewModel, BuildContext context)
       onPrivacyAgree;
@@ -39,11 +38,7 @@ class SimpleSplashPage extends BasePage<_SimpleSplashVM> {
       required this.onFinishJump,
       this.icon,
       this.title,
-      this.webClientAutoAgree = true})
-      : super(viewModel: _SimpleSplashVM());
-
-  @override
-  State<StatefulWidget> createState() => _SimpleSplashState();
+      this.webClientAutoAgree = true});
 
   /// 根据传入的隐私政策内容获取隐私政策中需要高亮的关键字列表
   List<String> getKeywordList() {
@@ -53,6 +48,9 @@ class SimpleSplashPage extends BasePage<_SimpleSplashVM> {
     }
     return keywordList;
   }
+
+  @override
+  State<BasePage> createState() => _SimpleSplashState();
 }
 
 class _SimpleSplashState
@@ -62,17 +60,7 @@ class _SimpleSplashState
   bool _resume = false;
 
   @override
-  void onResume() {
-    _resume = true;
-    _checkFinishJump();
-    super.onResume();
-  }
-
-  @override
-  void onPause() {
-    _resume = false;
-    super.onPause();
-  }
+  _SimpleSplashVM createViewModel() => _SimpleSplashVM();
 
   @override
   Widget createContentWidget(BuildContext context, _SimpleSplashVM viewModel) {
@@ -169,6 +157,19 @@ class _SimpleSplashState
         )
       ]),
     );
+  }
+
+  @override
+  void onResume() {
+    _resume = true;
+    _checkFinishJump();
+    super.onResume();
+  }
+
+  @override
+  void onPause() {
+    _resume = false;
+    super.onPause();
   }
 
   /// 展示隐私政策弹框

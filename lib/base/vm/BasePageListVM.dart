@@ -77,11 +77,8 @@ abstract class BasePageListVM<T, E> extends BaseListVM<T> {
     return 10;
   }
 
-  /// 快速构建EasyRefresh + ListView
-  EasyRefresh listRefreshBuilder(
-      {required ChildItemBuilder<T> childItemBuilder,
-      OnItemClick<T>? onItemClick,
-      Widget? listWidget}) {
+  /// 快速构建下拉刷新控件
+  EasyRefresh easyRefreshBuilder({required Widget child}) {
     return EasyRefresh(
         controller: refreshController,
         header: const ClassicHeader(),
@@ -90,33 +87,7 @@ abstract class BasePageListVM<T, E> extends BaseListVM<T> {
         resetAfterRefresh: true,
         onRefresh: () => onRefresh(),
         onLoad: () => onLoadMore(),
-        child: listWidget ??
-            listBuilder(
-              childItemBuilder: childItemBuilder,
-              onItemClick: onItemClick,
-            ));
-  }
-
-  /// 快速构建EasyRefresh + GridView
-  EasyRefresh gridRefreshBuilder(
-      {required ChildItemBuilder<T> childItemBuilder,
-      required SliverGridDelegate gridDelegate,
-      OnItemClick<T>? onItemClick,
-      Widget? gridWidget}) {
-    return EasyRefresh(
-        controller: refreshController,
-        header: const ClassicHeader(),
-        footer: const ClassicFooter(),
-        canRefreshAfterNoMore: true,
-        resetAfterRefresh: true,
-        onRefresh: () => onRefresh(),
-        onLoad: () => onLoadMore(),
-        child: gridWidget ??
-            gridBuilder(
-              gridDelegate: gridDelegate,
-              childItemBuilder: childItemBuilder,
-              onItemClick: onItemClick,
-            ));
+        child: child);
   }
 
   /// 下拉刷新/加载更多的事件处理

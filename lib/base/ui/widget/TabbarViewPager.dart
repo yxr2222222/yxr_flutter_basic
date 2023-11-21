@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../config/ColorConfig.dart';
@@ -90,7 +89,7 @@ class _TabbarViewPagerState extends State<TabbarViewPager>
           child: DefaultTabController(
               length: widget.tabbarDataList.length,
               child: TabBar(
-                dividerColor: widget.dividerColor,
+                dividerColor: Colors.transparent,
                 controller: _tabController,
                 isScrollable: widget.tabbarIsScrollable,
                 tabs: widget.getTabs(),
@@ -99,9 +98,15 @@ class _TabbarViewPagerState extends State<TabbarViewPager>
                 onTap: (index) {
                   widget.pageController.jumpToPage(index);
                 },
+                labelColor: widget.tabbarLabelStyle.color,
                 labelStyle: widget.tabbarLabelStyle,
+                unselectedLabelColor: widget.tabbarUnselectedLabelStyle.color,
                 unselectedLabelStyle: widget.tabbarUnselectedLabelStyle,
               )),
+        ),
+        Divider(
+          color: widget.dividerColor,
+          height: 0.5,
         ),
         Expanded(
             child: PageView.builder(
