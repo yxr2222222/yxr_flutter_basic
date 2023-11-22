@@ -32,6 +32,7 @@ abstract class BasePageState<VM extends BaseVM, T extends BasePage>
   bool _created = false;
   bool _resumed = false;
   AppLifecycleListener? _lifecycleListener;
+  _OnScreenSizeChangeOb? _onScreenSizeChangeOb;
 
   @override
   void initState() {
@@ -58,15 +59,19 @@ abstract class BasePageState<VM extends BaseVM, T extends BasePage>
           }
         });
 
-    if (widget.lazyCreate) {
-      // 添加第一次绘制完成监听
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    // 添加第一次绘制完成监听
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (widget.lazyCreate) {
         // 绘制完成之后检查是否需要执行onCreate
         _onCreate(context);
-      });
-    } else {
-      _onCreate(context);
-    }
+      }
+    });
+
+    // 添加屏幕尺寸变化监听
+    _onScreenSizeChangeOb = _OnScreenSizeChangeOb(this);
+    WidgetsBinding.instance.addObserver(_onScreenSizeChangeOb!);
+
+    _onCreate(context);
 
     // App的生命监听
     _lifecycleListener = AppLifecycleListener(
@@ -117,6 +122,9 @@ abstract class BasePageState<VM extends BaseVM, T extends BasePage>
   /// 组件被销毁
   @override
   void dispose() {
+    if (_onScreenSizeChangeOb != null) {
+      WidgetsBinding.instance.removeObserver(_onScreenSizeChangeOb!);
+    }
     _lifecycleListener?.dispose();
     dismissLoading();
 
@@ -125,6 +133,7 @@ abstract class BasePageState<VM extends BaseVM, T extends BasePage>
     super.dispose();
   }
 
+  @protected
   String getString(MultiString multiString) {
     return viewModel.getString(multiString);
   }
@@ -207,6 +216,10 @@ abstract class BasePageState<VM extends BaseVM, T extends BasePage>
   @protected
   void onDestroy() {}
 
+  @protected
+  void onScreenSizeChanged() {
+  }
+
   /// 展示toast
   void showToast(String? msg) {
     if (msg != null) {
@@ -267,5 +280,17 @@ abstract class BasePageState<VM extends BaseVM, T extends BasePage>
   /// 创建内容控件，交由子类自行实现
   @protected
   Widget createContentWidget(BuildContext context, VM viewModel);
+}
 
+class _OnScreenSizeChangeOb extends WidgetsBindingObserver {
+  final BasePageState _state;
+
+  _OnScreenSizeChangeOb(this._state);
+
+  @override
+  void didChangeMetrics() {
+    if (_state.mounted && _state.context.mounted) {
+      _state.onScreenSizeChanged();
+    }
+  }
 }

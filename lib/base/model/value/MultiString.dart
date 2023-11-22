@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:yxr_flutter_basic/base/extension/ObjectExtension.dart';
 
 class MultiString {
   final String _defaultValue;
@@ -9,8 +10,12 @@ class MultiString {
   MultiString(this._defaultValue);
 
   String getString(BuildContext? context) {
-    var localeName = Platform.localeName;
-    var value = _valueMap[localeName];
-    return value ?? _defaultValue;
+    // if (isAndroid() || isIOS()) {
+    //   var localeName = Platform.localeName;
+    //   var value = _valueMap[localeName];
+    //   return value ?? _defaultValue;
+    // }
+
+    return _defaultValue;
   }
 }

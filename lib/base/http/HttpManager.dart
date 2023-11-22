@@ -364,7 +364,7 @@ class HttpManager {
     if (code != successCode) {
       return BaseResp(false,
           error: CstException(
-              code.parseInt(defaultValue: -1) ?? -1, msg ?? "业务错误码不等于业务成功码"));
+              code.parseInt(defaultValue: -1), msg ?? "业务错误码不等于业务成功码"));
     }
 
     return BaseResp(true, data: data);
