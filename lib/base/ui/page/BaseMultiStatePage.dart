@@ -27,10 +27,16 @@ abstract class BaseMultiPage extends BasePage {
 
 abstract class BaseMultiPageState<VM extends BaseMultiVM,
     T extends BaseMultiPage> extends BasePageState<VM, T> {
+  // 创建 GlobalKey 用于获取 ScaffoldState
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   Widget? _contentView, _loadingView, _errorView, _emptyView;
+
+  GlobalKey<ScaffoldState> get scaffoldKey => _scaffoldKey;
 
   @override
   Widget createContentWidget(BuildContext context, VM viewModel) => Scaffold(
+        key: _scaffoldKey,
         resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
         appBar: widget.isNeedAppBar
             ? PreferredSize(

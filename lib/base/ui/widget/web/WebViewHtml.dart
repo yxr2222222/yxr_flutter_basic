@@ -78,7 +78,7 @@ class _WebViewState extends State<WebView> implements IWebViewFunction {
 
   @override
   Future<bool> canGoBack() async {
-    return true;
+    return false;
   }
 
   @override
