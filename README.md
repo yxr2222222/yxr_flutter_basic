@@ -7,7 +7,7 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
    ```yaml
    dependencies:
       # 集成yxr_flutter_basic依赖
-      yxr_flutter_basic: ^0.1.5
+      yxr_flutter_basic: ^0.1.6
       # 集成yxr_flutter_basic内部使用到的依赖
       cupertino_icons: ^1.0.2
       fluttertoast: ^8.2.2
@@ -95,21 +95,23 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
        }
      }
    ```
-4. 文件下载，具体参考[商品详情](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/product/ProductDetailPage.dart)
-5. 沉浸式状态栏，具体参考[商品详情](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/product/ProductDetailPage.dart)
+4. [LiveEvent使用示例](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/event/EventPage1.dart)
+5. 文件下载，具体参考[商品详情](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/product/ProductDetailPage.dart)
+6. 沉浸式状态栏，具体参考[商品详情](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/product/ProductDetailPage.dart)
    1. 继承BaseMultiPage时设置extendBodyBehindAppBar: true;
    2. VM中设置appbarController.appbarBackgroundColor = Colors.transparent;
-6. BaseMultiPage不要appbar，继承BaseMultiPage并设置isNeedAppBar为false；
-7. [BottomNavigationBarViewPager使用示例](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/bottomtviewpager/BottomNavigationBarViewPagerPage.dart)
-8. [TabbarViewPager使用示例](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/tabviewpager/TabViewPagerPage.dart)
-9. [网格布局（GridView）](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/grid/GridPage.dart)
-10. [存在item占有不同列数的网格布局（StaggeredGrid）](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/grid/StaggeredGridPage.dart)
-11. [瀑布流布局](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/grid/WaterfallGridPage.dart)
+7. BaseMultiPage不要appbar，继承BaseMultiPage并设置isNeedAppBar为false；
+8. [BottomNavigationBarViewPager使用示例](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/bottomtviewpager/BottomNavigationBarViewPagerPage.dart)
+9. [TabbarViewPager使用示例](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/tabviewpager/TabViewPagerPage.dart)
+10. [网格布局（GridView）](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/grid/GridPage.dart)
+11. [存在item占有不同列数的网格布局（StaggeredGrid）](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/grid/StaggeredGridPage.dart)
+12. [瀑布流布局](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/grid/WaterfallGridPage.dart)
 
 ## 注意事项
 1. Json解析类生成可以使用FlutterJsonToDart插件（AndroidStudio编译器）快速完成；
-2. BasePage及其子类互相嵌套时，注意只保留最外层VM的onBackPress()事件；
-3. 如果你的项目需要支持Web平台，请将以下<script></script>代码添加到web平台下index.html文件的<script>...</script>中
+2. BasePage及其子类互相嵌套时，BasePage的 isCanBackPressed 务必设置为 false;
+3. 如果需要动态控制wantKeepAlive以达到缓存PageView多个子Page请使用[BasePageViewPage](./lib/base/ui/page/BasePageViewPage.dart)，具体可以参考[TabViewPagerPage](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/tabviewpager/TabViewPagerPage.dart)；
+4. 如果你的项目需要支持Web平台，请将以下<script></script>代码添加到web平台下index.html文件的<script>...</script>中
    ```html
    <script>
        /**

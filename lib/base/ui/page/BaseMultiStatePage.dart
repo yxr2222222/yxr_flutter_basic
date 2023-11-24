@@ -14,8 +14,17 @@ abstract class BaseMultiPage extends BasePage {
   final bool extendBodyBehindAppBar;
   final bool resizeToAvoidBottomInset;
 
+  /// 具备loading、content、error、empty等多状态视图的页面基础类
+  /// [lazyCreate] 是否等第一帧绘制完成之后在走onCreate生命周期
+  /// [isCanBackPressed] 是否支持返回事件
+  /// [appbarHeight] appbar的高度，默认56
+  /// [isNeedAppBar] 是否需要appbar
+  /// [extendBodyBehindAppBar]
+  /// [resizeToAvoidBottomInset]
   BaseMultiPage(
       {super.key,
+      super.lazyCreate = false,
+      super.isCanBackPressed = true,
       this.appbarHeight = 56.0,
       this.isNeedAppBar = true,
       this.extendBodyBehindAppBar = false,

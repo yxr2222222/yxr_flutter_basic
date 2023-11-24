@@ -11,9 +11,13 @@ import '../widget/dialog/DefaultLoadingDialog.dart';
 
 abstract class BasePage extends StatefulWidget {
   final bool lazyCreate;
+  final bool isCanBackPressed;
   final PageLifecycle lifecycle = PageLifecycle();
 
-  BasePage({super.key, this.lazyCreate = false});
+  /// 页面基础类
+  /// [lazyCreate] 是否等第一帧绘制完成之后在走onCreate生命周期
+  /// [isCanBackPressed] 是否支持返回事件
+  BasePage({super.key, this.lazyCreate = false, this.isCanBackPressed = true});
 
   @override
   State<BasePage> createState();
@@ -39,7 +43,7 @@ abstract class BasePageState<VM extends BaseVM, T extends BasePage>
     VisibilityDetectorController.instance.updateInterval = Duration.zero;
     this._viewModel = createViewModel();
     // 初始化ViewModel
-    this._viewModel.init(context);
+    this._viewModel.init(context, widget.lifecycle);
 
     this._detector = VisibilityDetector(
         key: UniqueKey(),
@@ -101,17 +105,11 @@ abstract class BasePageState<VM extends BaseVM, T extends BasePage>
     super.build(context);
 
     /// 添加拦截控制，将backPress交给viewModel.onBackPressed处理
-    return WillPopScope(
-        child: Stack(
-          children: [
-            /// 添加可见性监听控件，用于处理page的onPause、onResume事件
-            _detector,
-
-            /// 页面内容视图
-            createContentWidget(context, viewModel)
-          ],
-        ),
-        onWillPop: () => Future(() => viewModel.onBackPressed()));
+    return widget.isCanBackPressed
+        ? WillPopScope(
+            child: _buildPageWidget(),
+            onWillPop: () => Future(() => viewModel.onBackPressed()))
+        : _buildPageWidget();
   }
 
   /// page是否在dispose前保持存活，默认是false
@@ -202,6 +200,7 @@ abstract class BasePageState<VM extends BaseVM, T extends BasePage>
     _forEachLifecycle((listener) {
       listener.onLifecycle(context, listener.onDestroy);
     });
+    widget.lifecycle.pageLifecycleListener.clear();
   }
 
   @protected
@@ -217,8 +216,7 @@ abstract class BasePageState<VM extends BaseVM, T extends BasePage>
   void onDestroy() {}
 
   @protected
-  void onScreenSizeChanged() {
-  }
+  void onScreenSizeChanged() {}
 
   /// 展示toast
   void showToast(String? msg) {
@@ -280,6 +278,17 @@ abstract class BasePageState<VM extends BaseVM, T extends BasePage>
   /// 创建内容控件，交由子类自行实现
   @protected
   Widget createContentWidget(BuildContext context, VM viewModel);
+
+  /// 构建页面视图
+  Widget _buildPageWidget() => Stack(
+        children: [
+          /// 添加可见性监听控件，用于处理page的onPause、onResume事件
+          _detector,
+
+          /// 页面内容视图
+          createContentWidget(context, viewModel)
+        ],
+      );
 }
 
 class _OnScreenSizeChangeOb extends WidgetsBindingObserver {

@@ -6,6 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:yxr_flutter_basic/base/extension/BuildContextExtension.dart';
 import 'package:yxr_flutter_basic/base/model/value/MultiString.dart';
 import 'package:yxr_flutter_basic/base/ui/page/BasePage.dart';
+import 'package:yxr_flutter_basic/base/ui/widget/lifecycle/PageLifecycle.dart';
 import 'package:yxr_flutter_basic/base/util/Log.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -17,18 +18,23 @@ import '../model/PermissionReq.dart';
 import '../util/PermissionUtil.dart';
 
 abstract class BaseVM {
+  late final PageLifecycle _pageLifecycle;
   BuildContext? _context;
   OnShowLoading? onShowLoading;
   OnDismissLoading? onDismissLoading;
   final List<BaseApi> _apiList = [];
   final List<CancelToken> _downloadCancelTokens = [];
 
-  void init(BuildContext context) {
+  void init(BuildContext context, PageLifecycle pageLifecycle) {
     _context = context;
+    _pageLifecycle = pageLifecycle;
   }
 
-  // 上下文
+  /// 上下文
   BuildContext? get context => _context;
+
+  /// 页面生命周期
+  PageLifecycle get pageLifecycle => _pageLifecycle;
 
   /// onCreate生命周期
   void onCreate() {}

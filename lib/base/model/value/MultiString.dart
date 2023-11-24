@@ -9,7 +9,7 @@ class MultiString {
 
   MultiString(this._defaultValue);
 
-  String getString(BuildContext? context) {
+  String getString([BuildContext? context]) {
     // if (isAndroid() || isIOS()) {
     //   var localeName = Platform.localeName;
     //   var value = _valueMap[localeName];

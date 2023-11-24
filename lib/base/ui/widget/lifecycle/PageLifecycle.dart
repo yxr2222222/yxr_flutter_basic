@@ -7,13 +7,17 @@ class PageLifecycle {
       _pageLifecycleListener;
 
   void addListener(PageLifecycleListener listener) {
-    if (!_pageLifecycleListener.contains(listener)) {
+    if (!contains(listener)) {
       _pageLifecycleListener.add(listener);
     }
   }
 
   void removeListener(PageLifecycleListener listener) {
     _pageLifecycleListener.remove(listener);
+  }
+
+  bool contains(PageLifecycleListener listener) {
+    return _pageLifecycleListener.contains(listener);
   }
 }
 
