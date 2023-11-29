@@ -7,6 +7,7 @@ abstract interface class EventObservable<T> {
   /// 移除一个Observer
   void removeObserve(EventObserver<T> observer);
 
+  /// 发送消息
   void postEvent(T? event);
 }
 

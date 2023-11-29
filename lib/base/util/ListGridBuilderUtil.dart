@@ -9,10 +9,12 @@ class ListGridBuilderUtil {
   ListGridBuilderUtil._();
 
   /// 快速构建ListView
-  static Widget listBuilder<E>({
-    required SimpleGetxController<List<E>> dataController,
-    required ChildItemBuilder<E> childItemBuilder,
-    OnItemClick<E>? onItemClick,
+  static Widget listBuilder<T>({
+    required SimpleGetxController<List<T>> dataController,
+    required ChildItemBuilder<T> childItemBuilder,
+    OnItemClick<T>? onItemClick,
+    OnItemDoubleClick<T>? onItemDoubleClick,
+    OnItemLongClick<T>? onItemLongClick,
     ScrollController? scrollController,
     EdgeInsetsGeometry? padding,
     ScrollPhysics? physics,
@@ -26,22 +28,27 @@ class ListGridBuilderUtil {
             padding: padding,
             shrinkWrap: shrinkWrap,
             itemBuilder: (context, index) {
-              E item = controller.dataNotNull[index];
+              T item = controller.dataNotNull[index];
               return BaseItemWidget(
-                  childItemBuilder: childItemBuilder,
-                  item: item,
-                  index: index,
-                  onItemClick: onItemClick);
+                childItemBuilder: childItemBuilder,
+                item: item,
+                index: index,
+                onItemClick: onItemClick,
+                onItemDoubleClick: onItemDoubleClick,
+                onItemLongClick: onItemLongClick,
+              );
             }),
         init: dataController);
   }
 
   /// 快速构建GridView
-  static Widget gridBuilder<E>({
+  static Widget gridBuilder<T>({
     required int crossAxisCount,
-    required ChildItemBuilder<E> childItemBuilder,
-    required SimpleGetxController<List<E>> dataController,
-    OnItemClick<E>? onItemClick,
+    required ChildItemBuilder<T> childItemBuilder,
+    required SimpleGetxController<List<T>> dataController,
+    OnItemClick<T>? onItemClick,
+    OnItemDoubleClick<T>? onItemDoubleClick,
+    OnItemLongClick<T>? onItemLongClick,
     ScrollController? scrollController,
     double mainAxisSpacing = 0.0,
     double crossAxisSpacing = 0.0,
@@ -60,24 +67,28 @@ class ListGridBuilderUtil {
           physics: physics,
           shrinkWrap: shrinkWrap,
           itemBuilder: (context, index) {
-            E item = controller.dataNotNull[index];
+            T item = controller.dataNotNull[index];
             return BaseItemWidget(
               childItemBuilder: childItemBuilder,
               item: item,
               index: index,
               onItemClick: onItemClick,
+              onItemDoubleClick: onItemDoubleClick,
+              onItemLongClick: onItemLongClick,
             );
           });
     }, init: dataController);
   }
 
   /// 快速构建存在item占不同列数的GridView，注意该方法不使用数据量特别多的情况
-  static Widget staggeredGridBuilder<E>({
+  static Widget staggeredGridBuilder<T>({
     required int crossAxisCount,
-    required StaggeredGridTileBuilder<E> staggeredGridTileBuilder,
-    required ChildItemBuilder<E> childItemBuilder,
-    required SimpleGetxController<List<E>> dataController,
-    OnItemClick<E>? onItemClick,
+    required StaggeredGridTileBuilder<T> staggeredGridTileBuilder,
+    required ChildItemBuilder<T> childItemBuilder,
+    required SimpleGetxController<List<T>> dataController,
+    OnItemClick<T>? onItemClick,
+    OnItemDoubleClick<T>? onItemDoubleClick,
+    OnItemLongClick<T>? onItemLongClick,
     ScrollController? scrollController,
     double mainAxisSpacing = 0.0,
     double crossAxisSpacing = 0.0,
@@ -99,6 +110,8 @@ class ListGridBuilderUtil {
                 item: item,
                 index: index,
                 onItemClick: onItemClick,
+                onItemDoubleClick: onItemDoubleClick,
+                onItemLongClick: onItemLongClick,
               )));
         }
       }
@@ -118,11 +131,13 @@ class ListGridBuilderUtil {
   }
 
   /// 快速构建瀑布流
-  static Widget waterfallBuilder<E>({
+  static Widget waterfallBuilder<T>({
     required SliverSimpleGridDelegate gridDelegate,
-    required ChildItemBuilder<E> childItemBuilder,
-    required SimpleGetxController<List<E>> dataController,
-    OnItemClick<E>? onItemClick,
+    required ChildItemBuilder<T> childItemBuilder,
+    required SimpleGetxController<List<T>> dataController,
+    OnItemClick<T>? onItemClick,
+    OnItemDoubleClick<T>? onItemDoubleClick,
+    OnItemLongClick<T>? onItemLongClick,
     ScrollController? scrollController,
     double mainAxisSpacing = 0.0,
     double crossAxisSpacing = 0.0,
@@ -139,12 +154,14 @@ class ListGridBuilderUtil {
             padding: padding,
             itemCount: controller.data?.length ?? 0,
             itemBuilder: (context, index) {
-              E item = controller.dataNotNull[index];
+              T item = controller.dataNotNull[index];
               return BaseItemWidget(
                 childItemBuilder: childItemBuilder,
                 item: item,
                 index: index,
                 onItemClick: onItemClick,
+                onItemDoubleClick: onItemDoubleClick,
+                onItemLongClick: onItemLongClick,
               );
             }),
         init: dataController);

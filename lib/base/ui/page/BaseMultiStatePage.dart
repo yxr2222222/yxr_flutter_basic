@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:yxr_flutter_basic/base/model/controller/AppbarController.dart';
 import 'package:yxr_flutter_basic/base/model/controller/ViewStateController.dart';
 import 'package:yxr_flutter_basic/base/model/em/ViewState.dart';
+import 'package:yxr_flutter_basic/base/ui/widget/SimpleWidget.dart';
 
 import '../../util/GetBuilderUtil.dart';
 import '../../vm/BaseMultiVM.dart';
@@ -95,7 +96,9 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
   @protected
   Widget createAppBar(BuildContext context, VM viewModel) {
     return GetBuilderUtil.builder<AppbarController>(
-        (controller) => AppBar(
+        (controller) => Visibility(
+            visible: controller.visible,
+            child: AppBar(
               // 禁止appbar因为滚动控件滚动导致的背景颜色变化
               surfaceTintColor: Colors.transparent,
               leading: GestureDetector(
@@ -112,7 +115,7 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
               centerTitle: true,
               titleTextStyle: controller.appbarTitleStyle,
               actions: controller.appbarActions,
-            ),
+            )),
         init: viewModel.appbarController);
   }
 
@@ -157,9 +160,10 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
   @protected
   Widget createErrorView(
       BuildContext context, VM viewModel, ViewStateController controller) {
-    return SizedBox(
+    return SimpleWidget(
       width: double.infinity,
       height: double.infinity,
+      onTap: onErrorViewTap(),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -203,9 +207,10 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
   @protected
   Widget createEmptyView(
       BuildContext context, VM viewModel, ViewStateController controller) {
-    return SizedBox(
+    return SimpleWidget(
       width: double.infinity,
       height: double.infinity,
+      onTap: onEmptyViewTap,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -296,4 +301,14 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
   /// 创建内容控件，抽象方法，子类必须实现
   @protected
   Widget createMultiContentWidget(BuildContext context, VM viewModel);
+
+  @protected
+  GestureTapCallback? onErrorViewTap() {
+    return null;
+  }
+
+  @protected
+  GestureTapCallback? onEmptyViewTap() {
+    return null;
+  }
 }

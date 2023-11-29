@@ -22,6 +22,15 @@ class AppbarController extends BaseGetxController {
     update();
   }
 
+  bool _visible = true;
+
+  bool get visible => _visible;
+
+  set visible(bool value) {
+    _visible = value;
+    update();
+  }
+
   /// appbar 标题样式
   TextStyle? _appbarTitleStyle = const TextStyle(
       fontSize: 18, color: Color(0xff333333), fontWeight: FontWeight.bold);

@@ -7,7 +7,7 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
    ```yaml
    dependencies:
       # 集成yxr_flutter_basic依赖
-      yxr_flutter_basic: ^0.1.6
+      yxr_flutter_basic: ^0.1.7
       # 集成yxr_flutter_basic内部使用到的依赖
       cupertino_icons: ^1.0.2
       fluttertoast: ^8.2.2
@@ -106,6 +106,7 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
 10. [网格布局（GridView）](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/grid/GridPage.dart)
 11. [存在item占有不同列数的网格布局（StaggeredGrid）](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/grid/StaggeredGridPage.dart)
 12. [瀑布流布局](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/grid/WaterfallGridPage.dart)
+12. [属性动画组件示例](https://github.com/yxr2222222/FlutterDemo/blob/master/lib/page/anima/AnimaPage.dart)
 
 ## 注意事项
 1. Json解析类生成可以使用FlutterJsonToDart插件（AndroidStudio编译器）快速完成；

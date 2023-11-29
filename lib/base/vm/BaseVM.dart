@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -24,6 +25,7 @@ abstract class BaseVM {
   OnDismissLoading? onDismissLoading;
   final List<BaseApi> _apiList = [];
   final List<CancelToken> _downloadCancelTokens = [];
+  Timer? _delayCreate;
 
   void init(BuildContext context, PageLifecycle pageLifecycle) {
     _context = context;
@@ -37,7 +39,11 @@ abstract class BaseVM {
   PageLifecycle get pageLifecycle => _pageLifecycle;
 
   /// onCreate生命周期
-  void onCreate() {}
+  void onCreate() {
+    _delayCreate = Timer(getDelayCreateDuration(), () {
+      onDelayCreate();
+    });
+  }
 
   /// onResume生命周期
   void onResume() {}
@@ -47,6 +53,9 @@ abstract class BaseVM {
 
   /// onDestroy生命周期
   void onDestroy() {
+    _delayCreate?.cancel();
+    _delayCreate = null;
+
     _context = null;
     onShowLoading = null;
     onDismissLoading = null;
@@ -290,6 +299,14 @@ abstract class BaseVM {
       print(e);
     }
   }
+
+  @protected
+  Duration getDelayCreateDuration() {
+    return const Duration(milliseconds: 100);
+  }
+
+  @protected
+  void onDelayCreate() {}
 
   void _onSuccess<T>(OnSuccess<T>? onSuccess, T? data) {
     if (onSuccess != null) {
