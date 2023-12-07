@@ -31,6 +31,7 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
       flutter_staggered_grid_view: ^0.7.0
       uuid: ^4.2.1
       encrypt: ^5.0.3
+      pointycastle: ^3.7.3
       build_runner: ^2.3.3
       json_serializable: ^6.6.0
    ```
