@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class GradientDecoration extends BoxDecoration {
-  const GradientDecoration({
+class SimpleGradientDecoration extends BoxDecoration {
+  const SimpleGradientDecoration({
     required Gradient gradient,
     BorderRadius radius = BorderRadius.zero,
   }) : super(

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../util/Log.dart';
@@ -137,6 +138,13 @@ extension StringExtension on String {
     } catch (e) {
       return defaultValue;
     }
+  }
+
+  /// 手机号验证
+  bool isPhoneNum() {
+    if (isEmpty || length != 11) return false;
+
+    return GetUtils.isPhoneNumber(this);
   }
 }
 

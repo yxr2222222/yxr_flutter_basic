@@ -226,13 +226,21 @@ abstract class BaseVM {
   }
 
   /// 展示loading弹框
-  void showLoading(
-      {String? loadingTxt,
-      Color? barrierColor,
-      bool barrierDismissible = false,
-      bool cancelable = false}) {
-    onShowLoading?.call(loadingTxt, barrierColor ?? Colors.transparent,
-        barrierDismissible, cancelable);
+  /// [barrierColor] 蒙层颜色
+  /// [barrierDismissible] 点击蒙层是否可以消失，默认不行
+  /// [cancelable] 返回按钮或者手势是否可以dismiss，默认不行
+  void showLoading({
+    String? loadingTxt,
+    Color? barrierColor,
+    bool barrierDismissible = false,
+    bool cancelable = false,
+  }) {
+    onShowLoading?.call(
+      loadingTxt,
+      barrierColor ?? Colors.transparent,
+      barrierDismissible,
+      cancelable,
+    );
   }
 
   /// 隐藏loading弹框
@@ -302,7 +310,7 @@ abstract class BaseVM {
 
   @protected
   Duration getDelayCreateDuration() {
-    return const Duration(milliseconds: 100);
+    return const Duration(milliseconds: 200);
   }
 
   @protected

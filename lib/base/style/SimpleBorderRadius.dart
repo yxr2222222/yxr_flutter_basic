@@ -1,0 +1,83 @@
+import 'package:flutter/material.dart';
+
+class SimpleBorderRadius extends BorderRadius{
+  SimpleBorderRadius.radius4() : super.circular(4);
+  SimpleBorderRadius.radius8() : super.circular(8);
+  SimpleBorderRadius.radius10() : super.circular(10);
+  SimpleBorderRadius.radius12() : super.circular(12);
+  SimpleBorderRadius.radius14() : super.circular(14);
+  SimpleBorderRadius.radius16() : super.circular(16);
+  SimpleBorderRadius.radius18() : super.circular(18);
+  SimpleBorderRadius.radius20() : super.circular(20);
+  SimpleBorderRadius.radius24() : super.circular(24);
+  SimpleBorderRadius.radius32() : super.circular(32);
+  SimpleBorderRadius.radius48() : super.circular(48);
+  SimpleBorderRadius.radius56() : super.circular(56);
+  SimpleBorderRadius.radius64() : super.circular(64);
+  SimpleBorderRadius.radius72() : super.circular(72);
+  SimpleBorderRadius.radius96() : super.circular(96);
+
+  const SimpleBorderRadius.radiusTop4() : super.vertical(top: const Radius.circular(4));
+  const SimpleBorderRadius.radiusTop8() : super.vertical(top: const Radius.circular(8));
+  const SimpleBorderRadius.radiusTop10() : super.vertical(top: const Radius.circular(10));
+  const SimpleBorderRadius.radiusTop12() : super.vertical(top: const Radius.circular(12));
+  const SimpleBorderRadius.radiusTop14() : super.vertical(top: const Radius.circular(14));
+  const SimpleBorderRadius.radiusTop16() : super.vertical(top: const Radius.circular(16));
+  const SimpleBorderRadius.radiusTop18() : super.vertical(top: const Radius.circular(18));
+  const SimpleBorderRadius.radiusTop20() : super.vertical(top: const Radius.circular(20));
+  const SimpleBorderRadius.radiusTop24() : super.vertical(top: const Radius.circular(24));
+  const SimpleBorderRadius.radiusTop32() : super.vertical(top: const Radius.circular(32));
+  const SimpleBorderRadius.radiusTop48() : super.vertical(top: const Radius.circular(48));
+  const SimpleBorderRadius.radiusTop56() : super.vertical(top: const Radius.circular(56));
+  const SimpleBorderRadius.radiusTop64() : super.vertical(top: const Radius.circular(64));
+  const SimpleBorderRadius.radiusTop72() : super.vertical(top: const Radius.circular(72));
+  const SimpleBorderRadius.radiusTop96() : super.vertical(top: const Radius.circular(96));
+
+  const SimpleBorderRadius.radiusBottom4() : super.vertical(bottom: const Radius.circular(4));
+  const SimpleBorderRadius.radiusBottom8() : super.vertical(bottom: const Radius.circular(8));
+  const SimpleBorderRadius.radiusBottom10() : super.vertical(bottom: const Radius.circular(10));
+  const SimpleBorderRadius.radiusBottom12() : super.vertical(bottom: const Radius.circular(12));
+  const SimpleBorderRadius.radiusBottom14() : super.vertical(bottom: const Radius.circular(14));
+  const SimpleBorderRadius.radiusBottom16() : super.vertical(bottom: const Radius.circular(16));
+  const SimpleBorderRadius.radiusBottom18() : super.vertical(bottom: const Radius.circular(18));
+  const SimpleBorderRadius.radiusBottom20() : super.vertical(bottom: const Radius.circular(20));
+  const SimpleBorderRadius.radiusBottom24() : super.vertical(bottom: const Radius.circular(24));
+  const SimpleBorderRadius.radiusBottom32() : super.vertical(bottom: const Radius.circular(32));
+  const SimpleBorderRadius.radiusBottom48() : super.vertical(bottom: const Radius.circular(48));
+  const SimpleBorderRadius.radiusBottom56() : super.vertical(bottom: const Radius.circular(56));
+  const SimpleBorderRadius.radiusBottom64() : super.vertical(bottom: const Radius.circular(64));
+  const SimpleBorderRadius.radiusBottom72() : super.vertical(bottom: const Radius.circular(72));
+  const SimpleBorderRadius.radiusBottom96() : super.vertical(bottom: const Radius.circular(96));
+
+  const SimpleBorderRadius.radiusLeft4() : super.horizontal(left: const Radius.circular(4));
+  const SimpleBorderRadius.radiusLeft8() : super.horizontal(left: const Radius.circular(8));
+  const SimpleBorderRadius.radiusLeft10() : super.horizontal(left: const Radius.circular(10));
+  const SimpleBorderRadius.radiusLeft12() : super.horizontal(left: const Radius.circular(12));
+  const SimpleBorderRadius.radiusLeft14() : super.horizontal(left: const Radius.circular(14));
+  const SimpleBorderRadius.radiusLeft16() : super.horizontal(left: const Radius.circular(16));
+  const SimpleBorderRadius.radiusLeft18() : super.horizontal(left: const Radius.circular(18));
+  const SimpleBorderRadius.radiusLeft20() : super.horizontal(left: const Radius.circular(20));
+  const SimpleBorderRadius.radiusLeft24() : super.horizontal(left: const Radius.circular(24));
+  const SimpleBorderRadius.radiusLeft32() : super.horizontal(left: const Radius.circular(32));
+  const SimpleBorderRadius.radiusLeft48() : super.horizontal(left: const Radius.circular(48));
+  const SimpleBorderRadius.radiusLeft56() : super.horizontal(left: const Radius.circular(56));
+  const SimpleBorderRadius.radiusLeft64() : super.horizontal(left: const Radius.circular(64));
+  const SimpleBorderRadius.radiusLeft72() : super.horizontal(left: const Radius.circular(72));
+  const SimpleBorderRadius.radiusLeft96() : super.horizontal(left: const Radius.circular(96));
+
+  const SimpleBorderRadius.radiusRight4() : super.horizontal(right: const Radius.circular(4));
+  const SimpleBorderRadius.radiusRight8() : super.horizontal(right: const Radius.circular(8));
+  const SimpleBorderRadius.radiusRight10() : super.horizontal(right: const Radius.circular(10));
+  const SimpleBorderRadius.radiusRight12() : super.horizontal(right: const Radius.circular(12));
+  const SimpleBorderRadius.radiusRight14() : super.horizontal(right: const Radius.circular(14));
+  const SimpleBorderRadius.radiusRight16() : super.horizontal(right: const Radius.circular(16));
+  const SimpleBorderRadius.radiusRight18() : super.horizontal(right: const Radius.circular(18));
+  const SimpleBorderRadius.radiusRight20() : super.horizontal(right: const Radius.circular(20));
+  const SimpleBorderRadius.radiusRight24() : super.horizontal(right: const Radius.circular(24));
+  const SimpleBorderRadius.radiusRight32() : super.horizontal(right: const Radius.circular(32));
+  const SimpleBorderRadius.radiusRight48() : super.horizontal(right: const Radius.circular(48));
+  const SimpleBorderRadius.radiusRight56() : super.horizontal(right: const Radius.circular(56));
+  const SimpleBorderRadius.radiusRight64() : super.horizontal(right: const Radius.circular(64));
+  const SimpleBorderRadius.radiusRight72() : super.horizontal(right: const Radius.circular(72));
+  const SimpleBorderRadius.radiusRight96() : super.horizontal(right: const Radius.circular(96));
+}

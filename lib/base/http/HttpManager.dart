@@ -8,6 +8,7 @@ import 'package:yxr_flutter_basic/base/http/cache/CacheStrategy.dart';
 import 'package:yxr_flutter_basic/base/http/interceptor/LoggingInterceptor.dart';
 import 'package:yxr_flutter_basic/base/http/cache/HttpCacheInterceptor.dart';
 import 'package:yxr_flutter_basic/base/http/interceptor/RequestInterceptor.dart';
+import 'package:yxr_flutter_basic/base/util/DeviceUtil.dart';
 import '../model/BaseResp.dart';
 import 'cache/CacheConfig.dart';
 import 'cache/CacheManager.dart';
@@ -239,28 +240,38 @@ class HttpManager {
     OnFailed? onFailed,
   }) async {
     if (isWeb()) {
-      // 如果是Web端，通过js交互实现。注意，需要将index.html下的<script>代码复制到自己项目指定位置
-      // Web端需要单独处理是因为dio的下载不支持Web端
-      webOnProgress(progress, total) {
-        if (onProgress != null) {
-          onProgress(progress, total);
+      var uaType = await DeviceUtil.getUaType();
+      if (!uaType.isWeb) {
+        var success = await urlPath.launch();
+        if (success) {
+          onSuccess?.call(null);
+        } else {
+          onFailed?.call(CstException.buildException("Url launch 失败"));
         }
-      }
-
-      webOnSuccess() {
-        if (onSuccess != null) {
-          onSuccess(null);
+      } else {
+        // 如果是Web端，通过js交互实现。注意，需要将index.html下的<script>代码复制到自己项目指定位置
+        // Web端需要单独处理是因为dio的下载不支持Web端
+        webOnProgress(progress, total) {
+          if (onProgress != null) {
+            onProgress(progress, total);
+          }
         }
-      }
 
-      webOnFailed(e) {
-        if (onFailed != null) {
-          onFailed(CstException(-1, e.toString()));
+        webOnSuccess() {
+          if (onSuccess != null) {
+            onSuccess(null);
+          }
         }
-      }
 
-      js.context.callMethod('download',
-          [urlPath, filename, webOnProgress, webOnSuccess, webOnFailed]);
+        webOnFailed(e) {
+          if (onFailed != null) {
+            onFailed(CstException(-1, e.toString()));
+          }
+        }
+
+        js.context.callMethod('download',
+            [urlPath, filename, webOnProgress, webOnSuccess, webOnFailed]);
+      }
     } else {
       var targetFile = await getDownloadPath(filename: filename);
       try {

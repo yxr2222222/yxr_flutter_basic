@@ -54,27 +54,17 @@ class PermissionUtil {
     if (permissionReq.isNeedTipDialog) {
       var title = permissionReq.title ?? "权限申请说明";
       var content = permissionReq.content ?? "当前功能需要申请部分权限，确定进行申请吗？";
-      showCupertinoDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return CupertinoAlertDialog(
-                title: Text(title),
-                content: Text(content),
-                actions: [
-                  CupertinoDialogAction(
-                      child: const Text("取消"),
-                      onPressed: () {
-                        context.pop();
-                        _onDenied(permissionReq.onDenied, false);
-                      }),
-                  CupertinoDialogAction(
-                      child: const Text("确认"),
-                      onPressed: () {
-                        context.pop();
-                        _requestPermission(context, permissionReq);
-                      })
-                ]);
-          });
+
+      context.showEasyAlertDialog(
+        title: title,
+        content: content,
+        onCancel: () {
+          _onDenied(permissionReq.onDenied, false);
+        },
+        onConfirm: () {
+          _requestPermission(context, permissionReq);
+        },
+      );
     } else {
       _requestPermission(context, permissionReq);
     }

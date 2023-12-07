@@ -29,6 +29,36 @@ class DeviceUtil {
     return null;
   }
 
+  /// 获取Ua类型
+  static Future<UaType> getUaType() async {
+    var deviceInfo = DeviceInfoPlugin();
+    var uaType = UaType();
+
+    if (deviceInfo.isAndroid()) {
+      uaType._isAndroid = true;
+    } else if (deviceInfo.isIOS()) {
+      uaType._isIos = true;
+    } else if (deviceInfo.isWeb()) {
+      var userAgent =
+          ((await deviceInfo.webBrowserInfo).userAgent ?? "").toLowerCase();
+      if (userAgent.contains("ipad") || userAgent.contains("iphone")) {
+        uaType._isIos = true;
+        uaType._isWechat = userAgent.contains("micromessenger");
+      } else if (userAgent.contains("android")) {
+        uaType._isIos = true;
+        uaType._isWechat = userAgent.contains("micromessenger");
+      } else if (userAgent.contains("midp") ||
+          userAgent.contains("ucweb") ||
+          userAgent.contains("micromessenger")) {
+        uaType._isIosOrAndroid = true;
+        uaType._isWechat = userAgent.contains("micromessenger");
+      } else {
+        uaType._isWeb = true;
+      }
+    }
+    return uaType;
+  }
+
   /// 获取App名称
   static Future<String> getAppName() async {
     return (await getPackageInfo()).appName;
@@ -47,4 +77,22 @@ class DeviceUtil {
   static Future<PackageInfo> getPackageInfo() async {
     return await PackageInfo.fromPlatform();
   }
+}
+
+class UaType {
+  bool _isAndroid = false;
+  bool _isIos = false;
+  bool _isIosOrAndroid = false;
+  bool _isWeb = false;
+  bool _isWechat = false;
+
+  bool get isAndroid => _isAndroid;
+
+  bool get isIos => _isIos;
+
+  bool get isWeb => _isWeb;
+
+  bool get isWechat => _isWechat;
+
+  bool get isIosOrAndroid => _isIosOrAndroid;
 }

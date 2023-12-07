@@ -142,8 +142,12 @@ abstract class BasePageState<VM extends BaseVM, T extends BasePage>
       _created = true;
 
       // 设置展示loading的方法
-      viewModel.onShowLoading = (String? loadingTxt, Color barrierColor,
-          bool barrierDismissible, bool cancelable) {
+      viewModel.onShowLoading = (
+        String? loadingTxt,
+        Color barrierColor,
+        bool barrierDismissible,
+        bool cancelable,
+      ) {
         showLoading(
             loadingTxt: loadingTxt,
             barrierColor: barrierColor,
@@ -226,23 +230,22 @@ abstract class BasePageState<VM extends BaseVM, T extends BasePage>
   }
 
   /// 展示loading弹框
-  void showLoading(
-      {String? loadingTxt,
-      Color? barrierColor,
-      bool barrierDismissible = false,
-      bool cancelable = false}) {
+  void showLoading({
+    String? loadingTxt,
+    Color? barrierColor,
+    bool barrierDismissible = false,
+    bool cancelable = false,
+  }) {
     dismissLoading();
     _currLoading = context;
-    showDialog(
-        context: context,
+
+    context.showEasyDialog(
         barrierColor: barrierColor,
         barrierDismissible: barrierDismissible,
+        cancelable: cancelable,
         builder: (context) {
           _currLoading = context;
-          return WillPopScope(
-            onWillPop: () async => cancelable,
-            child: createLoadingDialog(loadingTxt),
-          );
+          return createLoadingDialog(loadingTxt);
         });
   }
 
@@ -263,6 +266,13 @@ abstract class BasePageState<VM extends BaseVM, T extends BasePage>
 
   void hideKeyboard() {
     viewModel.hideKeyboard();
+  }
+
+  /// [cantPopExit] 如果不可pop的时候是否退出当前APP，默认是true
+  void finish({T? result, bool cantPopExit = true}) {
+    if (context.mounted) {
+      context.pop();
+    }
   }
 
   /// 便利执行生命周期监听回调

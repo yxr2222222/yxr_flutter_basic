@@ -20,6 +20,12 @@
       "languageVersion": "2.19"
     },
     {
+      "name": "asn1lib",
+      "rootUri": "file:///Users/ciba/.pub-cache/hosted/pub.dev/asn1lib-1.5.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "async",
       "rootUri": "file:///Users/ciba/.pub-cache/hosted/pub.dev/async-2.11.0",
       "packageUri": "lib/",
@@ -146,12 +152,6 @@
       "languageVersion": "2.19"
     },
     {
-      "name": "cupertino_icons",
-      "rootUri": "file:///Users/ciba/.pub-cache/hosted/pub.dev/cupertino_icons-1.0.6",
-      "packageUri": "lib/",
-      "languageVersion": "2.19"
-    },
-    {
       "name": "dart_style",
       "rootUri": "file:///Users/ciba/.pub-cache/hosted/pub.dev/dart_style-2.3.3",
       "packageUri": "lib/",
@@ -180,6 +180,12 @@
       "rootUri": "file:///Users/ciba/.pub-cache/hosted/pub.dev/easy_refresh-3.3.2+2",
       "packageUri": "lib/",
       "languageVersion": "2.13"
+    },
+    {
+      "name": "encrypt",
+      "rootUri": "file:///Users/ciba/.pub-cache/hosted/pub.dev/encrypt-5.0.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
     },
     {
       "name": "fake_async",
@@ -560,6 +566,12 @@
       "languageVersion": "2.19"
     },
     {
+      "name": "pointycastle",
+      "rootUri": "file:///Users/ciba/.pub-cache/hosted/pub.dev/pointycastle-3.7.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
       "name": "pool",
       "rootUri": "file:///Users/ciba/.pub-cache/hosted/pub.dev/pool-1.5.1",
       "packageUri": "lib/",
@@ -872,7 +884,7 @@
       "languageVersion": "3.1"
     }
   ],
-  "generated": "2023-11-24T09:03:29.186939Z",
+  "generated": "2023-12-07T08:32:29.684732Z",
   "generator": "pub",
   "generatorVersion": "3.1.4"
 }

@@ -13,9 +13,13 @@ class ViewStateController extends BaseGetxController {
   String? get retryTxt => _retryTxt;
 
   void refreshState(ViewState viewState, {String? hintTxt, String? retryTxt}) {
-    _viewState = viewState;
-    _hintTxt = hintTxt;
-    _retryTxt = retryTxt;
-    update();
+    if (_viewState != viewState ||
+        _hintTxt != hintTxt ||
+        retryTxt != retryTxt) {
+      _viewState = viewState;
+      _hintTxt = hintTxt;
+      _retryTxt = retryTxt;
+      update();
+    }
   }
 }
