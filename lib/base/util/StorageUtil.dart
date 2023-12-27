@@ -1,27 +1,40 @@
 import 'dart:convert';
 
-import 'package:get_storage/get_storage.dart';
 import 'package:yxr_flutter_basic/base/http/HttpManager.dart';
+import 'package:yxr_flutter_basic/base/util/storage/BaseStorage.dart';
+
+import 'package:yxr_flutter_basic/base/util/storage/AppStorage.dart'
+    if (dart.library.js) 'package:yxr_flutter_basic/base/util/storage/WebStorage.dart'
+    as storage;
 
 class StorageUtil {
-  static GetStorage? _storage;
   static bool _inited = false;
+  static BaseStorage? _storage;
 
   StorageUtil._internal();
 
   static Future<bool> init() async {
     if (!_inited) {
       _inited = true;
-      await GetStorage.init();
-      _storage = GetStorage();
+      _storage = storage.BStorage();
     }
     return true;
   }
 
   /// value为自定义对象时好想只会存在内存
   static Future<bool> put(String key, dynamic value) async {
+    if (value != null) {
+      var runtimeType = value.runtimeType.toString();
+      if ("int" != runtimeType &&
+          "double" != runtimeType &&
+          "bool" != runtimeType &&
+          "String" != runtimeType) {
+        throw Exception("Value必须是基础的int、double、bool或String");
+      }
+    }
+
     if (_storage != null) {
-      await _storage!.write(key, value);
+      await _storage!.put(key, value);
       return true;
     }
     return false;
@@ -30,7 +43,7 @@ class StorageUtil {
   /// value为自定义对象时好想只会存在内存
   static Future<T?> get<T>(String key) async {
     if (_storage != null) {
-      return _storage!.read(key);
+      return _storage!.get(key);
     }
     return null;
   }

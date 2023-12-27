@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:yxr_flutter_basic/base/extension/ObjectExtension.dart';
 import 'package:yxr_flutter_basic/base/extension/StringExtension.dart';
 import 'package:yxr_flutter_basic/base/http/cache/CacheMode.dart';
@@ -31,6 +32,8 @@ class HttpManager {
 
   late RespConfig _respConfig;
   late bool _debug;
+
+  OnGlobalFailed? onGlobalFailed;
 
   bool get debug => _debug;
 
@@ -141,7 +144,7 @@ class HttpManager {
     ReqType reqType = ReqType.get,
     Map<String, dynamic>? params,
     Options? options,
-    Object? body,
+    Map<String, dynamic>? body,
     CancelToken? cancelToken,
     RespConfig? respConfig,
     CacheMode? cacheMode = CacheMode.ONLY_NETWORK,
@@ -176,7 +179,7 @@ class HttpManager {
     Map<String, dynamic>? params,
     RespConfig? respConfig,
     Options? options,
-    Object? body,
+    Map<String, dynamic>? body,
     CancelToken? cancelToken,
     CacheMode? cacheMode = CacheMode.ONLY_NETWORK,
     int? cacheTime,
@@ -232,7 +235,7 @@ class HttpManager {
     required String urlPath,
     required String filename,
     Map<String, dynamic>? params,
-    Object? body,
+    Map<String, dynamic>? body,
     Options? options,
     CancelToken? cancelToken,
     ProgressCallback? onProgress,
@@ -373,9 +376,11 @@ class HttpManager {
     }
 
     if (code != successCode) {
-      return BaseResp(false,
-          error: CstException(
-              code.parseInt(defaultValue: -1), msg ?? "业务错误码不等于业务成功码"));
+      var error = CstException(
+        code.parseInt(defaultValue: -1),
+        msg ?? "业务错误码不等于业务成功码",
+      );
+      return BaseResp(false, error: error);
     }
 
     return BaseResp(true, data: data);
@@ -385,3 +390,4 @@ class HttpManager {
 typedef OnFromJson<T> = T Function(Map<String, dynamic> json);
 typedef OnSuccess<T> = void Function(T? data);
 typedef OnFailed = void Function(CstException exception);
+typedef OnGlobalFailed = void Function(CstException exception, BuildContext? context);

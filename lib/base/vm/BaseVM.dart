@@ -154,10 +154,7 @@ abstract class BaseVM {
                   } else if (isShowErrorToast == true) {
                     showToast(e.message);
                   }
-
-                  if (onFailed != null) {
-                    onFailed(e);
-                  }
+                  _onFailed(onFailed, e);
                 }
               })
             }, onError: (e) {
@@ -175,7 +172,7 @@ abstract class BaseVM {
     bool isLoadingCancelable = false,
     String? loadingTxt,
     Map<String, dynamic>? params,
-    Object? body,
+    Map<String, dynamic>? body,
     Options? options,
     CancelToken? cancelToken,
     OnSuccess<File>? onSuccess,
@@ -316,6 +313,16 @@ abstract class BaseVM {
   @protected
   void onDelayCreate() {}
 
+  /// 检查是走成功还是失败回调
+  _checkSuccessFailed<T>(
+      BaseResp<T> resp, OnSuccess<T>? onSuccess, OnFailed? onFailed) {
+    if (resp.isSuccess) {
+      _onSuccess(onSuccess, resp.data);
+    } else {
+      _onFailed(onFailed, resp.error ?? CstException(-1, "未知异常"));
+    }
+  }
+
   void _onSuccess<T>(OnSuccess<T>? onSuccess, T? data) {
     if (onSuccess != null) {
       onSuccess(data);
@@ -327,16 +334,7 @@ abstract class BaseVM {
     if (onFailed != null) {
       onFailed(exception);
     }
-  }
-
-  /// 检查是走成功还是失败回调
-  _checkSuccessFailed<T>(
-      BaseResp<T> resp, OnSuccess<T>? onSuccess, OnFailed? onFailed) {
-    if (resp.isSuccess) {
-      _onSuccess(onSuccess, resp.data);
-    } else {
-      _onFailed(onFailed, resp.error ?? CstException(-1, "未知异常"));
-    }
+    HttpManager.getInstance().onGlobalFailed?.call(exception, context);
   }
 }
 

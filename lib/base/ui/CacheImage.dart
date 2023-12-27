@@ -7,8 +7,8 @@ class CacheImage {
 
   static Widget simple({
     required String imageUrl,
-    double width = double.infinity,
-    double height = double.infinity,
+    double? width = double.infinity,
+    double? height,
     BoxFit fit = BoxFit.cover,
     Widget? placeholder,
     Widget? errorWidget,
@@ -44,8 +44,8 @@ class CacheImage {
     BorderRadius? borderRadius,
     double? borderWidth,
     Color borderColor,
-    double width,
-    double height,
+    double? width,
+    double? height,
   ) {
     List<Widget> children = [];
     children.add(borderRadius == null

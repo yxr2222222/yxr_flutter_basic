@@ -1,6 +1,6 @@
 name: yxr_flutter_basic
 description: on flutter basic package.
-version: 0.1.8
+version: 0.1.9
 homepage: https://github.com/yxr2222222/yxr_flutter_basic
 
 environment:
@@ -32,6 +32,7 @@ dependencies:
   uuid: ^4.2.1
   encrypt: ^5.0.3
   pointycastle: ^3.7.3
+  path: ^1.8.3
 
 dev_dependencies:
   build_runner: ^2.3.3
