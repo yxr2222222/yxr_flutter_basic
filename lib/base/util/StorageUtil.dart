@@ -17,6 +17,7 @@ class StorageUtil {
     if (!_inited) {
       _inited = true;
       _storage = storage.BStorage();
+      await _storage?.init();
     }
     return true;
   }
