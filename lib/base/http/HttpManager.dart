@@ -316,8 +316,13 @@ class HttpManager {
   }
 
   /// 复制缓存options
-  Options _copyOptions(RespConfig? respConfig, Options? options,
-      {CacheMode? cacheMode, int? cacheTime, String? customCacheKey}) {
+  Options _copyOptions(
+    RespConfig? respConfig,
+    Options? options, {
+    CacheMode? cacheMode,
+    int? cacheTime,
+    String? customCacheKey,
+  }) {
     Options requestOptions = options ?? Options();
     requestOptions = requestOptions.copyWith(
       responseType: ResponseType.bytes,
@@ -338,7 +343,10 @@ class HttpManager {
 
   /// 解析请求的结果
   BaseResp<T> _parseResponse<T>(
-      Response response, RespConfig? respConfig, OnFromJson<T>? onFromJson) {
+    Response response,
+    RespConfig? respConfig,
+    OnFromJson<T>? onFromJson,
+  ) {
     String filedCode = respConfig?.filedCode ?? _respConfig.filedCode;
     String filedMsg = respConfig?.filedMsg ?? _respConfig.filedMsg;
     String successCode = respConfig?.successCode ?? _respConfig.successCode;
@@ -390,4 +398,5 @@ class HttpManager {
 typedef OnFromJson<T> = T Function(Map<String, dynamic> json);
 typedef OnSuccess<T> = void Function(T? data);
 typedef OnFailed = void Function(CstException exception);
-typedef OnGlobalFailed = void Function(CstException exception, BuildContext? context);
+typedef OnGlobalFailed = void Function(
+    CstException exception, BuildContext? context);

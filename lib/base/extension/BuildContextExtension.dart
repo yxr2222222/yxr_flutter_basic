@@ -28,15 +28,15 @@ extension BuildContextExtension on BuildContext {
       if (finishCurr) {
         try {
           return await Navigator.pushAndRemoveUntil(this,
-              MaterialPageRoute(builder: (context) => page), (route) => false);
+              CupertinoPageRoute(builder: (context) => page), (route) => false);
         } catch (e) {
           Log.d("pushAndRemoveUntil发生异常", error: e);
           return Navigator.of(this)
-              .push(MaterialPageRoute(builder: (context) => page));
+              .push(CupertinoPageRoute(builder: (context) => page));
         }
       } else {
         return Navigator.of(this)
-            .push(MaterialPageRoute(builder: (context) => page));
+            .push(CupertinoPageRoute(builder: (context) => page));
       }
     }
     return null;

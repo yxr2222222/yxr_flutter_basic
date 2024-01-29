@@ -108,7 +108,11 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
                 child: SizedBox(
                     width: 56,
                     height: 48,
-                    child: Icon(controller.appbarBackIcon, size: 24)),
+                    child: Icon(
+                      controller.appbarBackIcon,
+                      color: controller.appbarBackIconColor,
+                      size: 24,
+                    )),
               ),
               backgroundColor: controller.appbarBackgroundColor,
               title: Text(controller.appbarTitle ?? ""),

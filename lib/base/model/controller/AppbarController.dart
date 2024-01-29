@@ -12,6 +12,16 @@ class AppbarController extends BaseGetxController {
     update();
   }
 
+  // appbar 返回图标
+  Color? _appbarBackIconColor;
+
+  Color? get appbarBackIconColor => _appbarBackIconColor;
+
+  set appbarBackIconColor(Color? appbarBackIconColor) {
+    _appbarBackIconColor = appbarBackIconColor;
+    update();
+  }
+
   /// appbar 标题
   String? _appbarTitle;
 

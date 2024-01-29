@@ -112,6 +112,7 @@ class _SimpleSplashState
                                             style: const TextStyle(
                                                 color: ColorConfig.black_333333,
                                                 fontWeight: FontWeight.normal,
+                                                decoration: TextDecoration.none,
                                                 fontSize: 14),
                                           ),
                                       init: viewModel.countDownController),

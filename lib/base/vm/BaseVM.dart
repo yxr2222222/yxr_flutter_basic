@@ -307,7 +307,8 @@ abstract class BaseVM {
 
   @protected
   Duration getDelayCreateDuration() {
-    return const Duration(milliseconds: 200);
+    /// 默认使用的时CupertinoPageRoute动画，延迟使用CupertinoPageRoute的动画时长500
+    return const Duration(milliseconds: 500);
   }
 
   @protected
@@ -323,12 +324,14 @@ abstract class BaseVM {
     }
   }
 
+  /// 接口成功回调
   void _onSuccess<T>(OnSuccess<T>? onSuccess, T? data) {
     if (onSuccess != null) {
       onSuccess(data);
     }
   }
 
+  /// 接口失败回调
   void _onFailed(OnFailed? onFailed, CstException exception) {
     Log.d("Http request failed", error: exception);
     if (onFailed != null) {

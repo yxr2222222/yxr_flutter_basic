@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 class SimpleWidget extends Container {
   final GestureTapCallback? onTap;
+  final GestureTapCallback? onDoubleTap;
+  final GestureLongPressCallback? onLongTap;
+  final void Function()? onBuild;
 
   SimpleWidget(
       {super.key,
@@ -18,13 +21,19 @@ class SimpleWidget extends Container {
       super.transformAlignment,
       super.child,
       super.clipBehavior = Clip.none,
-      this.onTap});
+      this.onTap,
+      this.onDoubleTap,
+      this.onLongTap,
+      this.onBuild});
 
   @override
   Widget build(BuildContext context) {
+    onBuild?.call();
     if (onTap != null) {
       return GestureDetector(
         onTap: onTap,
+        onDoubleTap: onDoubleTap,
+        onLongPress: onLongTap,
         child: super.build(context),
       );
     }

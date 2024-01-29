@@ -16,13 +16,21 @@ class BStorage extends BaseStorage {
   /// value为自定义对象时好想只会存在内存
   @override
   Future<bool> put(String key, dynamic value) async {
-    await _storage!.write(key, value);
-    return true;
+    try {
+      await _storage!.write(key, value);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   /// value为自定义对象时好想只会存在内存
   @override
   Future<T?> get<T>(String key) async {
-    return _storage!.read(key);
+    try {
+      return _storage!.read(key);
+    } catch (e) {
+      return null;
+    }
   }
 }

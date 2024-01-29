@@ -22,7 +22,8 @@ class StorageUtil {
     return true;
   }
 
-  /// value为自定义对象时好想只会存在内存
+  /// value只支持int、double、bool、String基础数据
+  /// 自定义对象数据请使用putWithJson
   static Future<bool> put(String key, dynamic value) async {
     if (value != null) {
       var runtimeType = value.runtimeType.toString();
@@ -41,12 +42,13 @@ class StorageUtil {
     return false;
   }
 
-  /// value为自定义对象时好想只会存在内存
-  static Future<T?> get<T>(String key) async {
+  /// value只支持int、double、bool、String基础数据
+  /// 自定义对象数据请使用putWithJson
+  static Future<T?> get<T>(String key, {T? defaultValue}) async {
     if (_storage != null) {
-      return _storage!.get(key);
+      return (await _storage!.get(key)) ?? defaultValue;
     }
-    return null;
+    return defaultValue;
   }
 
   /// value为自定义对象时好想只会存在内存
@@ -55,9 +57,10 @@ class StorageUtil {
   }
 
   /// value为自定义对象时好想只会存在内存
-  static Future<T?> getWithJson<T>(String key, OnFromJson<T> onFromJson) async {
+  static Future<T?> getWithJson<T>(String key, OnFromJson<T> onFromJson,
+      {T? defaultValue}) async {
     var json = await get<String>(key);
-    if (json == null) return null;
-    return onFromJson(jsonDecode(json));
+    if (json == null) return defaultValue;
+    return onFromJson(jsonDecode(json)) ?? defaultValue;
   }
 }
