@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:yxr_flutter_basic/base/config/ColorConfig.dart';
 import 'package:yxr_flutter_basic/base/model/controller/AppbarController.dart';
 import 'package:yxr_flutter_basic/base/model/controller/ViewStateController.dart';
 import 'package:yxr_flutter_basic/base/model/em/ViewState.dart';
@@ -11,7 +12,9 @@ import 'BasePage.dart';
 
 abstract class BaseMultiPage extends BasePage {
   final double appbarHeight;
+  final Color bodyColor;
   final bool isNeedAppBar;
+  final bool isNeedScaffold;
   final bool extendBodyBehindAppBar;
   final bool resizeToAvoidBottomInset;
 
@@ -20,16 +23,20 @@ abstract class BaseMultiPage extends BasePage {
   /// [isCanBackPressed] 是否支持返回事件
   /// [appbarHeight] appbar的高度，默认56
   /// [isNeedAppBar] 是否需要appbar
-  /// [extendBodyBehindAppBar]
-  /// [resizeToAvoidBottomInset]
-  BaseMultiPage(
-      {super.key,
-      super.lazyCreate = false,
-      super.isCanBackPressed = true,
-      this.appbarHeight = 56.0,
-      this.isNeedAppBar = true,
-      this.extendBodyBehindAppBar = false,
-      this.resizeToAvoidBottomInset = false});
+  /// [isNeedScaffold] 是否需要脚手架，如果是false脚手架相关的内容均不可使用（例如appbar, drawer），一般用于viewpage的子页面
+  /// [extendBodyBehindAppBar] 如果您希望 body 的高度扩展到包含应用栏的高度并且 body 的顶部与应用栏的顶部对齐，则必须将Scaffold小部件的extendBodyBehindAppBar属性设置为true（默认值为false )。
+  /// [resizeToAvoidBottomInset] 在 Flutter 中 Scaffold 默认情况下 resizeToAvoidBottomInset 为 true，当 resizeToAvoidBottomInset 为 true 时，Scaffold 内部会将 mediaQuery.viewInsets.bottom 参与到 BoxConstraints 的大小计算，也就是键盘弹起时调整了内部的 bottom 位置来迎合键盘。这时候键盘已经收起，mediaQuery.viewInsets.bottom 应该更新为 0 ，
+  BaseMultiPage({
+    super.key,
+    super.lazyCreate = false,
+    super.isCanBackPressed = true,
+    this.appbarHeight = 56.0,
+    this.isNeedAppBar = true,
+    this.isNeedScaffold = true,
+    this.bodyColor = ColorConfig.white_f2f2f2,
+    this.extendBodyBehindAppBar = false,
+    this.resizeToAvoidBottomInset = false,
+  });
 
   @override
   State<BaseMultiPage> createState();
@@ -45,32 +52,42 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
   GlobalKey<ScaffoldState> get scaffoldKey => _scaffoldKey;
 
   @override
-  Widget createContentWidget(BuildContext context, VM viewModel) => Scaffold(
-        key: _scaffoldKey,
-        resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
-        appBar: widget.isNeedAppBar
-            ? PreferredSize(
-                preferredSize: Size(
-                    MediaQuery.of(context).size.width, widget.appbarHeight),
-                child: createAppBar(context, viewModel),
-              )
-            : null,
-        extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
-        body: Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: const BoxDecoration(color: Color(0xfff2f2f2)),
-            child: GetBuilderUtil.builder(
-                (controller) => _buildWidget(context, viewModel, controller),
-                init: viewModel.stateController)),
-        onEndDrawerChanged: createOnEndDrawerChanged(),
-        onDrawerChanged: createOnDrawerChanged(),
-        drawer: createDrawer(),
-        endDrawer: createEndDraw(),
-        drawerDragStartBehavior: createDrawerDragStartBehavior(),
-        drawerEdgeDragWidth: createDrawerEdgeDragWidth(),
-        drawerEnableOpenDragGesture: createDrawerEnableOpenDragGesture(),
-        endDrawerEnableOpenDragGesture: createEndDrawerEnableOpenDragGesture(),
+  Widget createContentWidget(BuildContext context, VM viewModel) =>
+      widget.isNeedScaffold
+          ? Scaffold(
+              key: _scaffoldKey,
+              resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
+              appBar: widget.isNeedAppBar
+                  ? PreferredSize(
+                      preferredSize: Size(
+                        MediaQuery.of(context).size.width,
+                        widget.appbarHeight,
+                      ),
+                      child: createAppBar(context, viewModel),
+                    )
+                  : null,
+              extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
+              body: _buildBodyWidget(),
+              onEndDrawerChanged: createOnEndDrawerChanged(),
+              onDrawerChanged: createOnDrawerChanged(),
+              drawer: createDrawer(),
+              endDrawer: createEndDraw(),
+              drawerDragStartBehavior: createDrawerDragStartBehavior(),
+              drawerEdgeDragWidth: createDrawerEdgeDragWidth(),
+              drawerEnableOpenDragGesture: createDrawerEnableOpenDragGesture(),
+              endDrawerEnableOpenDragGesture:
+                  createEndDrawerEnableOpenDragGesture(),
+            )
+          : _buildBodyWidget();
+
+  Widget _buildBodyWidget() => Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(color: widget.bodyColor),
+        child: GetBuilderUtil.builder(
+          (controller) => _buildWidget(context, viewModel, controller),
+          init: viewModel.stateController,
+        ),
       );
 
   /// 根据不同状态来显示不同的视图

@@ -28,16 +28,24 @@ class LiveEventCore {
 }
 
 class _EventObservable<T> implements EventObservable<T> {
-  final List<_PageEventObserver<T>> _observers = [];
+  final Map<int, _PageEventObserver<T>> _observersMap = {};
 
   /// 注册具有生命周期的消息监听监听
   @override
   void observe(PageLifecycle lifecycle, EventObserver<T> observer) {
-    var pageEventObserver = _findPageEventObserver(lifecycle);
+    var hashCode = lifecycle.hashCode;
+    var pageEventObserver = _observersMap[hashCode];
+
     if (pageEventObserver == null) {
-      var listener = _buildPageLifecycleListener(lifecycle);
-      pageEventObserver = _PageEventObserver<T>(listener);
-      _observers.add(pageEventObserver);
+      pageEventObserver = _PageEventObserver<T>();
+      _observersMap[hashCode] = pageEventObserver;
+
+      PageLifecycleListener listener =
+          PageLifecycleListener(onDestroy: (context) {
+        pageEventObserver?.observerList.clear();
+        _observersMap.remove(hashCode);
+      });
+      lifecycle.addListener(listener);
     }
 
     var observerList = pageEventObserver.observerList;
@@ -46,47 +54,12 @@ class _EventObservable<T> implements EventObservable<T> {
     }
   }
 
-  /// 移除消息监听
-  @override
-  void removeObserve(EventObserver<T> observer) {
-    for (var element in _observers) {
-      if (element.contains(observer)) {
-        element.remove(observer);
-        break;
-      }
-    }
-  }
-
   /// 发送消息
   @override
   void postEvent(T? event) {
-    for (var observer in _observers) {
-      observer.post(event);
-    }
-  }
-
-  /// 构建生命周期监听
-  PageLifecycleListener _buildPageLifecycleListener(PageLifecycle lifecycle) {
-    PageLifecycleListener listener =
-        PageLifecycleListener(onDestroy: (context) {
-      var pageEventObserver = _findPageEventObserver(lifecycle);
-      if (pageEventObserver != null) {
-        pageEventObserver.observerList.clear();
-        _observers.remove(pageEventObserver);
-      }
+    _observersMap.forEach((key, value) {
+      value.post(event);
     });
-    lifecycle.addListener(listener);
-    return listener;
-  }
-
-  /// 根据生命周期找到PageEventObserver
-  _PageEventObserver<T>? _findPageEventObserver(PageLifecycle lifecycle) {
-    for (var value in _observers) {
-      if (lifecycle.contains(value.listener)) {
-        return value;
-      }
-    }
-    return null;
   }
 }
 
@@ -95,13 +68,10 @@ class _EventObservable<T> implements EventObservable<T> {
 /// 每次post消息其实是找到指定的_PageEventObserver并遍历其中所有的EventObserver
 class _PageEventObserver<T> {
   final List<EventObserver<T>> _observerList = [];
-  final PageLifecycleListener _listener;
 
   List<EventObserver<T>> get observerList => _observerList;
 
-  PageLifecycleListener get listener => _listener;
-
-  _PageEventObserver(this._listener);
+  _PageEventObserver();
 
   /// _PageEventObserver中是否包括了某个EventObserver
   bool contains(EventObserver<T> observer) {

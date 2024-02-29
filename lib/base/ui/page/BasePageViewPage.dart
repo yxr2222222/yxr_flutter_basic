@@ -24,6 +24,7 @@ abstract class BasePageViewPage extends BaseMultiPage {
     super.isCanBackPressed = false,
     super.appbarHeight = 0,
     super.isNeedAppBar = false,
+    super.isNeedScaffold = false,
     super.extendBodyBehindAppBar = false,
     super.resizeToAvoidBottomInset = false,
     required this.pageIndex,

@@ -199,11 +199,11 @@ abstract class BasePageState<VM extends BaseVM, T extends BasePage>
 
   /// onDestroy生命周期判断
   void _onDestroy() {
-    viewModel.onDestroy();
-    onDestroy();
     _forEachLifecycle((listener) {
       listener.onLifecycle(context, listener.onDestroy);
     });
+    viewModel.onDestroy();
+    onDestroy();
     widget.lifecycle.pageLifecycleListener.clear();
   }
 

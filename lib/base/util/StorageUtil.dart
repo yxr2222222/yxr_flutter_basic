@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:yxr_flutter_basic/base/http/HttpManager.dart';
+import 'package:yxr_flutter_basic/base/util/Log.dart';
 import 'package:yxr_flutter_basic/base/util/storage/BaseStorage.dart';
 
 import 'package:yxr_flutter_basic/base/util/storage/AppStorage.dart'
@@ -46,7 +47,11 @@ class StorageUtil {
   /// 自定义对象数据请使用putWithJson
   static Future<T?> get<T>(String key, {T? defaultValue}) async {
     if (_storage != null) {
-      return (await _storage!.get(key)) ?? defaultValue;
+      try {
+        return (await _storage!.get(key)) ?? defaultValue;
+      } catch (e) {
+        Log.w(e.toString());
+      }
     }
     return defaultValue;
   }
@@ -59,8 +64,13 @@ class StorageUtil {
   /// value为自定义对象时好想只会存在内存
   static Future<T?> getWithJson<T>(String key, OnFromJson<T> onFromJson,
       {T? defaultValue}) async {
-    var json = await get<String>(key);
-    if (json == null) return defaultValue;
-    return onFromJson(jsonDecode(json)) ?? defaultValue;
+    try {
+      var json = await get<String>(key);
+      if (json == null) return defaultValue;
+      return onFromJson(jsonDecode(json)) ?? defaultValue;
+    } catch (e) {
+      Log.w(e.toString());
+    }
+    return defaultValue;
   }
 }

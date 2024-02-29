@@ -60,6 +60,7 @@ class BaseItemWidgetState<T> extends State<BaseItemWidget<T>> {
         onTap: onTap,
         onDoubleTap: onDoubleTap,
         onLongPress: onLongPress,
+        behavior: HitTestBehavior.opaque,
         child: widget.childItemBuilder(this, context));
   }
 

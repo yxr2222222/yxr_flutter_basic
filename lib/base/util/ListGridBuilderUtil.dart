@@ -25,7 +25,7 @@ class ListGridBuilderUtil {
             itemCount: controller.data?.length ?? 0,
             controller: scrollController,
             physics: physics,
-            padding: padding,
+            padding: padding ?? const EdgeInsets.all(0),
             shrinkWrap: shrinkWrap,
             itemBuilder: (context, index) {
               T item = controller.dataNotNull[index];
@@ -63,7 +63,7 @@ class ListGridBuilderUtil {
           crossAxisSpacing: crossAxisSpacing,
           itemCount: controller.data?.length ?? 0,
           controller: scrollController,
-          padding: padding,
+          padding: padding ?? const EdgeInsets.all(0),
           physics: physics,
           shrinkWrap: shrinkWrap,
           itemBuilder: (context, index) {
@@ -118,7 +118,7 @@ class ListGridBuilderUtil {
 
       return SingleChildScrollView(
         controller: scrollController,
-        padding: padding,
+        padding: padding ?? const EdgeInsets.all(0),
         physics: physics,
         child: StaggeredGrid.count(
           crossAxisCount: crossAxisCount,
@@ -151,7 +151,7 @@ class ListGridBuilderUtil {
             controller: scrollController,
             mainAxisSpacing: mainAxisSpacing,
             crossAxisSpacing: crossAxisSpacing,
-            padding: padding,
+            padding: padding ?? const EdgeInsets.all(0),
             itemCount: controller.data?.length ?? 0,
             itemBuilder: (context, index) {
               T item = controller.dataNotNull[index];

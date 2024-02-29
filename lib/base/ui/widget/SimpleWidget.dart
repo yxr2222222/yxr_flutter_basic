@@ -34,6 +34,7 @@ class SimpleWidget extends Container {
         onTap: onTap,
         onDoubleTap: onDoubleTap,
         onLongPress: onLongTap,
+        behavior: HitTestBehavior.opaque,
         child: super.build(context),
       );
     }
