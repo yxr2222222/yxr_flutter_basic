@@ -1,6 +1,12 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:encrypt/encrypt.dart';
 import 'package:uuid/uuid.dart';
 import 'package:pointycastle/asymmetric/api.dart';
+import 'package:pointycastle/api.dart';
+import 'package:pointycastle/asymmetric/pkcs1.dart';
+import 'package:pointycastle/asymmetric/rsa.dart';
 
 class EncrypterUtil {
   EncrypterUtil._();
@@ -64,9 +70,14 @@ class EncrypterUtil {
   static String? rsaDecrypt(String publicKey, String data) {
     try {
       RSAPublicKey key = RSAKeyParser().parse(publicKey) as RSAPublicKey;
-      var encrypter = Encrypter(RSA(publicKey: key));
-      var decrypted = encrypter.decrypt64(data);
-      return decrypted;
+
+      AsymmetricBlockCipher cipher = PKCS1Encoding(RSAEngine());
+      cipher.init(false, PublicKeyParameter<RSAPublicKey>(key));
+
+      List<int> sourceBytes = base64Decode(data);
+      var process = cipher.process(Uint8List.fromList(sourceBytes));
+
+      return utf8.decode(process);
     } catch (e) {
       return null;
     }
@@ -95,19 +106,19 @@ class EncrypterUtil {
   }
 
   /// AES+RSA混合加密
-  /// [aesKey] 长度为32的AES的密钥
+  /// [aesKey] 加密之后的aes的key
   /// [publicKey] Rsa的公钥
   /// [data] 需要解密的内容
   static String? aesRsaDecrypt(
-    String aesKey,
+    String aesEncryptKey,
     String publicKey,
     String data,
   ) {
     try {
-      var decryptAesKey = rsaDecrypt(aesKey, data);
-      if (decryptAesKey == null) return null;
+      var aesKey = rsaDecrypt(publicKey, aesEncryptKey);
+      if (aesKey == null) return null;
 
-      var decryptData = aesDecrypt(decryptAesKey, data);
+      var decryptData = aesDecrypt(aesKey, data);
       return decryptData;
     } catch (e) {
       return null;

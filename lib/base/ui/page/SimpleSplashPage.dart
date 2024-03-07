@@ -286,6 +286,7 @@ class _SimpleSplashVM extends BaseVM {
 
   void refreshSplashContent(SplashContent splashContent) {
     splashContentController.data = splashContent;
+    countDownController.data = splashContent.countDownSeconds;
 
     _timer?.cancel();
     if (splashContent.countDownSeconds > 0) {
@@ -340,8 +341,9 @@ class SplashContent {
   final int countDownSeconds;
   final bool showCountDownUi;
 
-  SplashContent(
-      {required this.content,
-      required this.countDownSeconds,
-      this.showCountDownUi = true});
+  SplashContent({
+    required this.content,
+    required this.countDownSeconds,
+    this.showCountDownUi = true,
+  });
 }

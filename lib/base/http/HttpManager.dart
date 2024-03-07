@@ -395,8 +395,10 @@ class HttpManager {
   }
 }
 
-typedef OnFromJson<T> = T Function(Map<String, dynamic> json);
+typedef OnFromJson<T> = T? Function(Map<String, dynamic> json);
 typedef OnSuccess<T> = void Function(T? data);
 typedef OnFailed = void Function(CstException exception);
 typedef OnGlobalFailed = void Function(
-    CstException exception, BuildContext? context);
+  CstException exception,
+  BuildContext? context,
+);

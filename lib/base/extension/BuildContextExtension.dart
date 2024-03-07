@@ -64,9 +64,11 @@ extension BuildContextExtension on BuildContext {
     Color? barrierColor,
     bool barrierDismissible = false,
     bool cancelable = true,
+    bool useSafeArea = false,
   }) {
     showDialog(
         context: this,
+        useSafeArea: useSafeArea,
         barrierColor: barrierColor,
         barrierDismissible: barrierDismissible,
         builder: (context) {
