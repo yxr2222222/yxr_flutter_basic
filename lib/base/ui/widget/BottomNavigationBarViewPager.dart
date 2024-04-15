@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yxr_flutter_basic/base/config/ColorConfig.dart';
 
 class BottomNavigationBarViewPager extends StatefulWidget {
   final List<ViewPagerData> viewPagerDataList;
@@ -79,6 +80,14 @@ class _BottomNavigationBarViewPagerState
   }
 
   @override
+  void didUpdateWidget(covariant BottomNavigationBarViewPager oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.viewPagerDataList != widget.viewPagerDataList) {
+      _currIndex = widget.initIndex;
+    }
+  }
+
+  @override
   void dispose() {
     widget.pageController.dispose();
     super.dispose();
@@ -110,7 +119,8 @@ class _BottomNavigationBarViewPagerState
         Theme(
           data: ThemeData(
             bottomNavigationBarTheme: BottomNavigationBarThemeData(
-                backgroundColor: widget.backgroundColor),
+              backgroundColor: widget.backgroundColor,
+            ),
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
           ),

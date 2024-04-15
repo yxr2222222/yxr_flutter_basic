@@ -9,7 +9,9 @@ import 'BaseListVM.dart';
 
 abstract class BasePageListVM<T, E> extends BaseListVM<T> {
   final EasyRefreshController refreshController = EasyRefreshController(
-      controlFinishRefresh: true, controlFinishLoad: true);
+    controlFinishRefresh: true,
+    controlFinishLoad: true,
+  );
 
   bool _loading = false;
   bool? _firstRetryMultiStateLoading;
@@ -24,9 +26,10 @@ abstract class BasePageListVM<T, E> extends BaseListVM<T> {
   @override
   void onRetry() {
     firstLoad(
-        multiStateLoading: _firstRetryMultiStateLoading,
-        dialogLoading: _firstRetryDialogLoading,
-        loadingTxt: _firstRetryLoadingTxt);
+      multiStateLoading: _firstRetryMultiStateLoading,
+      dialogLoading: _firstRetryDialogLoading,
+      loadingTxt: _firstRetryLoadingTxt,
+    );
   }
 
   /// 首次加载，主要用于进入页面时即触发数据加载，且不想要下拉刷新的动作
@@ -47,20 +50,25 @@ abstract class BasePageListVM<T, E> extends BaseListVM<T> {
       showLoading(loadingTxt: loadingTxt);
     }
     loadData(_page, getPageSize()).then(
-        (resp) => {
-              _checkUpdateResp(resp, true,
-                  first: true,
-                  multiStateLoading: multiStateLoading,
-                  dialogLoading: dialogLoading)
-            }, onError: (e) {
-      _refreshLoadFailed(
-        true,
-        e,
-        first: true,
-        multiStateLoading: multiStateLoading,
-        dialogLoading: dialogLoading,
-      );
-    }).catchError((e) {
+      (resp) => {
+        _checkUpdateResp(
+          resp,
+          true,
+          first: true,
+          multiStateLoading: multiStateLoading,
+          dialogLoading: dialogLoading,
+        )
+      },
+      onError: (e) {
+        _refreshLoadFailed(
+          true,
+          e,
+          first: true,
+          multiStateLoading: multiStateLoading,
+          dialogLoading: dialogLoading,
+        );
+      },
+    ).catchError((e) {
       return e;
     });
   }
@@ -86,7 +94,9 @@ abstract class BasePageListVM<T, E> extends BaseListVM<T> {
   }
 
   /// 快速构建下拉刷新控件
-  EasyRefresh easyRefreshBuilder({required Widget child}) {
+  EasyRefresh easyRefreshBuilder({
+    required Widget child,
+  }) {
     return EasyRefresh(
         controller: refreshController,
         header: const ClassicHeader(),
@@ -196,7 +206,7 @@ abstract class BasePageListVM<T, E> extends BaseListVM<T> {
       }
       if (first) {
         if (multiStateLoading == true) {
-          showErrorState();
+          showErrorState(errorTxt: error.message);
         }
         if (dialogLoading == true) {
           dismissLoading();

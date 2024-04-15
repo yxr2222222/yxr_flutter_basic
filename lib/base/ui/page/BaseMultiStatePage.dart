@@ -180,7 +180,10 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
   /// 创建错误视图，子类可override自定义
   @protected
   Widget createErrorView(
-      BuildContext context, VM viewModel, ViewStateController controller) {
+    BuildContext context,
+    VM viewModel,
+    ViewStateController controller,
+  ) {
     return SimpleWidget(
       width: double.infinity,
       height: double.infinity,
@@ -197,6 +200,7 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
           Container(
             margin: const EdgeInsets.only(top: 24),
             child: Text(
+              textAlign: TextAlign.center,
               controller.hintTxt ?? "加载失败，试试刷新页面",
               style: const TextStyle(fontSize: 14, color: Color(0xff999999)),
             ),
@@ -209,7 +213,11 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
                 backgroundColor: Colors.blue,
                 elevation: 5,
                 padding: const EdgeInsets.only(
-                    left: 24, top: 14, right: 24, bottom: 14),
+                  left: 16,
+                  top: 10,
+                  right: 16,
+                  bottom: 10,
+                ),
                 shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(24))),
               ),
@@ -256,7 +264,11 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
                 backgroundColor: Colors.blue,
                 elevation: 5,
                 padding: const EdgeInsets.only(
-                    left: 24, top: 14, right: 24, bottom: 14),
+                  left: 16,
+                  top: 10,
+                  right: 16,
+                  bottom: 10,
+                ),
                 shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(24))),
               ),

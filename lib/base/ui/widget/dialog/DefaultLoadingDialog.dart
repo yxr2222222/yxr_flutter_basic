@@ -7,8 +7,8 @@ class DefaultLoadingDialog extends BaseDialog {
   DefaultLoadingDialog(String? loadingTxt, {super.key})
       : super(
             child: Container(
-          width: 96,
-          height: 96,
+          width: 72,
+          height: 72,
           alignment: Alignment.center,
           decoration: const BoxDecoration(
               color: Colors.white,
@@ -21,13 +21,13 @@ class DefaultLoadingDialog extends BaseDialog {
               ],
               borderRadius: BorderRadius.all(Radius.circular(8))),
           child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(8),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(
-                    width: 24,
-                    height: 24,
+                    width: 20,
+                    height: 20,
                     child: CircularProgressIndicator(),
                   ),
                   Visibility(
@@ -37,9 +37,12 @@ class DefaultLoadingDialog extends BaseDialog {
                         child: Text(
                           loadingTxt ?? "",
                           maxLines: 1,
+                          textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                              fontSize: 12, color: Color(0xff5c5c5c)),
+                            fontSize: 12,
+                            color: Color(0xff5c5c5c),
+                          ),
                         )),
                   )
                 ],
