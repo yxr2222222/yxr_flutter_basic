@@ -7,6 +7,7 @@ class CacheImage {
 
   static Widget simple({
     required String imageUrl,
+    GlobalKey? key,
     double? width = double.infinity,
     double? height,
     BoxFit fit = BoxFit.cover,
@@ -22,12 +23,19 @@ class CacheImage {
       fit: fit,
       imageUrl: imageUrl,
       placeholder: (context, url) =>
-          placeholder ?? const Icon(Icons.downloading),
+          placeholder ??
+          const Icon(
+            Icons.downloading,
+          ),
       errorWidget: (context, url, error) =>
-          errorWidget ?? const Icon(Icons.error),
+          errorWidget ??
+          const Icon(
+            Icons.error,
+          ),
     );
 
     return Stack(
+      key: key,
       children: _getImages(
         image,
         borderRadius,
@@ -48,23 +56,27 @@ class CacheImage {
     double? height,
   ) {
     List<Widget> children = [];
-    children.add(borderRadius == null
-        ? image
-        : ClipRRect(
-            borderRadius: borderRadius,
-            child: image,
-          ));
+    children.add(
+      borderRadius == null
+          ? image
+          : ClipRRect(
+              borderRadius: borderRadius,
+              child: image,
+            ),
+    );
 
     if (borderWidth != null && borderWidth > 0) {
-      children.add(Container(
-        width: width,
-        height: height,
-        decoration: SimpleStrokeDecoration(
-          borderColor: borderColor,
-          strokeWidth: borderWidth,
-          radius: borderRadius ?? BorderRadius.zero,
+      children.add(
+        Container(
+          width: width,
+          height: height,
+          decoration: SimpleStrokeDecoration(
+            borderColor: borderColor,
+            strokeWidth: borderWidth,
+            radius: borderRadius ?? BorderRadius.zero,
+          ),
         ),
-      ));
+      );
     }
     return children;
   }

@@ -33,7 +33,7 @@ class BStorage extends BaseStorage {
       var data = _localStorage[key];
       if (data == null || _undefine == data) return null;
 
-      var runtimeType = T.runtimeType.toString();
+      var runtimeType = T.toString();
       if ("int" == runtimeType) {
         return data.parseInt() as T;
       } else if ("double" == runtimeType) {

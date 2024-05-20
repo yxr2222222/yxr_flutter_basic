@@ -19,17 +19,20 @@ class CacheManager {
   /// 私有的命名构造函数
   CacheManager._internal() {
     if (isAndroid() || isIOS()) {
-      openDatabase("basic_http_cache.db", version: 1,
-          onCreate: (Database db, int version) {
-        Log.d("basic_http_cache...onCreate");
-        // 创建缓存表
-        db.execute(
-            "CREATE TABLE IF NOT EXISTS HttpCacheObj(cacheKey TEXT PRIMARY KEY, cacheValue TEXT NOT NULL, expireTime INTEGER NOT NULL, updateTime INTEGER NOT NULL)");
+      openDatabase(
+        "basic_http_cache.db",
+        version: 1,
+        onCreate: (Database db, int version) {
+          Log.d("basic_http_cache...onCreate");
+          // 创建缓存表
+          db.execute(
+              "CREATE TABLE IF NOT EXISTS HttpCacheObj(cacheKey TEXT PRIMARY KEY, cacheValue TEXT NOT NULL, expireTime INTEGER NOT NULL, updateTime INTEGER NOT NULL)");
 
-        // 删除过期数据
-        db.execute(
-            "DELETE FROM HttpCacheObj WHERE expireTime <= ${DateTime.now().millisecondsSinceEpoch}");
-      }).then((db) {}, onError: (e) {
+          // 删除过期数据
+          db.execute(
+              "DELETE FROM HttpCacheObj WHERE expireTime <= ${DateTime.now().millisecondsSinceEpoch}");
+        },
+      ).then((db) {}, onError: (e) {
         Log.d(e.toString());
       }).catchError((e) {
         return e;
@@ -41,25 +44,34 @@ class CacheManager {
     return _instance;
   }
 
+  /// 除安卓、iOS外的平台（例如网页）因为没有合适的本地持久化方案，暂时使用内存缓存来减少本次请求的压力
+  final Map<String, HttpCacheObj?> _otherAppCache = {};
+
   Future<bool> init() async {
     try {
-      var database = await openDatabase("basic_http_cache.db", version: 1,
-          onCreate: (Database db, int version) {
-        Log.d("basic_http_cache...onCreate");
-        // 创建缓存表
-        db.execute(
-            "CREATE TABLE IF NOT EXISTS HttpCacheObj(cacheKey TEXT PRIMARY KEY, cacheValue TEXT NOT NULL, expireTime INTEGER NOT NULL, updateTime INTEGER NOT NULL)");
+      var database = await openDatabase(
+        "basic_http_cache.db",
+        version: 1,
+        onCreate: (Database db, int version) {
+          Log.d("basic_http_cache...onCreate");
+          // 创建缓存表
+          db.execute(
+              "CREATE TABLE IF NOT EXISTS HttpCacheObj(cacheKey TEXT PRIMARY KEY, cacheValue TEXT NOT NULL, expireTime INTEGER NOT NULL, updateTime INTEGER NOT NULL)");
 
-        // 删除过期数据
-        db.execute(
-            "DELETE FROM HttpCacheObj WHERE expireTime <= ${DateTime.now().millisecondsSinceEpoch}");
-      });
+          // 删除过期数据
+          db.execute(
+              "DELETE FROM HttpCacheObj WHERE expireTime <= ${DateTime.now().millisecondsSinceEpoch}");
+        },
+      );
       _database = database;
       return true;
     } catch (e) {
       return false;
     }
   }
+
+  /// 是否是APP缓存
+  bool isAppCache() => isAndroid() || isIOS();
 
   /// 根据请求获取缓存
   Future<HttpCacheObj?>? getCacheWithReq(RequestOptions options) async {
@@ -98,33 +110,49 @@ class CacheManager {
           if (code == successCode) {
             int cacheTime = extra[CacheStrategy.CACHE_TIME] ?? defaultCacheTime;
             int expireTime = DateTime.now().millisecondsSinceEpoch + cacheTime;
-
-            // 先删除老的缓存
-            await _database?.delete("HttpCacheObj",
-                where: "cacheKey = ?", whereArgs: [cacheKey]);
-
             var cache = HttpCacheObj(cacheKey, cacheValue, expireTime);
-            await _database?.insert("HttpCacheObj", cache.toJson());
+
+            if (isAppCache()) {
+              // 先删除老的缓存
+              await _database?.delete(
+                "HttpCacheObj",
+                where: "cacheKey = ?",
+                whereArgs: [cacheKey],
+              );
+
+              await _database?.insert("HttpCacheObj", cache.toJson());
+            } else {
+              _otherAppCache[cacheKey] = cache;
+            }
           }
         }
       }
     } catch (e) {
-      Log.d("Http request cache error!", error: e);
+      Log.w("Http request cache error!", error: e);
     }
   }
 
   /// 获取缓存
   Future<HttpCacheObj?>? getCache(String cacheKey) async {
     try {
-      var map = await _database
-          ?.query("HttpCacheObj", where: "cacheKey = ?", whereArgs: [cacheKey]);
-      Map<String, dynamic>? cacheMap = map?.firstOrNull;
-      if (cacheMap != null) {
-        return HttpCacheObj(cacheMap["cacheKey"], cacheMap["cacheValue"],
-            cacheMap["expireTime"]);
+      if (isAppCache()) {
+        var map = await _database?.query(
+          "HttpCacheObj",
+          where: "cacheKey = ?",
+          whereArgs: [cacheKey],
+        );
+        Map<String, dynamic>? cacheMap = map?.firstOrNull;
+        if (cacheMap != null) {
+          return HttpCacheObj(
+            cacheMap["cacheKey"],
+            cacheMap["cacheValue"],
+            cacheMap["expireTime"],
+          );
+        }
       }
+      return _otherAppCache[cacheKey];
     } catch (e) {
-      return null;
+      Log.w("get cache error: ${e.toString()}");
     }
     return null;
   }
@@ -159,7 +187,8 @@ class CacheManager {
     if (body != null) {
       stringBuffer.write("_");
       stringBuffer.write(
-          md5.convert(utf8.encode(jsonEncode(body).toString())).toString());
+        md5.convert(utf8.encode(jsonEncode(body).toString())).toString(),
+      );
     }
     return md5.convert(utf8.encode(stringBuffer.toString())).toString();
   }

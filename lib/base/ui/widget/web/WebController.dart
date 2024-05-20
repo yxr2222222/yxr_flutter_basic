@@ -73,6 +73,7 @@ class WebController implements IWebViewFunction {
   @override
   Future<bool> loadUrl({required String url, bool firstLoad = false}) async {
     if (_function != null) {
+      if (url.isEmpty) return false;
       if (firstLoad && _firstLoaded) {
         return false;
       }

@@ -31,7 +31,7 @@ class PermissionUtil {
     Future.wait(statusFutureList).then((value) {
       bool isAllGranted = true;
       for (var permission in value) {
-        if (!permission.isGranted) {
+        if (!permission.isGranted && !permission.isLimited) {
           isAllGranted = false;
           break;
         }
@@ -50,7 +50,9 @@ class PermissionUtil {
   }
 
   static void _checkRequestPermission(
-      BuildContext context, PermissionReq permissionReq) {
+    BuildContext context,
+    PermissionReq permissionReq,
+  ) {
     if (permissionReq.isNeedTipDialog) {
       var title = permissionReq.title ?? "权限申请说明";
       var content = permissionReq.content ?? "当前功能需要申请部分权限，确定进行申请吗？";
@@ -58,6 +60,8 @@ class PermissionUtil {
       context.showEasyAlertDialog(
         title: title,
         content: content,
+        cancelTxt: permissionReq.cancelText ?? "取消",
+        confirmTxt: permissionReq.confirmText ?? "确定",
         onCancel: () {
           _onDenied(permissionReq.onDenied, false);
         },
@@ -71,7 +75,9 @@ class PermissionUtil {
   }
 
   static void _requestPermission(
-      BuildContext context, PermissionReq permissionReq) {
+    BuildContext context,
+    PermissionReq permissionReq,
+  ) {
     permissionReq.permissions.request().then((value) {
       _checkPermission(value, permissionReq, context);
     }, onError: (e) {
@@ -82,8 +88,11 @@ class PermissionUtil {
     });
   }
 
-  static void _checkPermission(Map<Permission, PermissionStatus> value,
-      PermissionReq permissionReq, BuildContext context) {
+  static void _checkPermission(
+    Map<Permission, PermissionStatus> value,
+    PermissionReq permissionReq,
+    BuildContext context,
+  ) {
     bool isGranted = false;
     bool isPermanentlyDenied = false;
 
@@ -103,25 +112,29 @@ class PermissionUtil {
           permissionReq.permissionPermanentlyDeniedDesc;
       if (isPermanentlyDenied && permissionProhibitDesc != null) {
         showCupertinoDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return CupertinoAlertDialog(
-                  content: Text(permissionProhibitDesc),
-                  actions: [
-                    CupertinoDialogAction(
-                        child: const Text("取消"),
-                        onPressed: () {
-                          context.pop();
-                        }),
-                    CupertinoDialogAction(
-                        child: const Text("确认"),
-                        onPressed: () {
-                          context.pop();
-                          // 跳着到设置界面
-                          openAppSettings().then((value) => null);
-                        })
-                  ]);
-            });
+          context: context,
+          builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              content: Text(permissionProhibitDesc),
+              actions: [
+                CupertinoDialogAction(
+                  child: Text(permissionReq.cancelText ?? "取消"),
+                  onPressed: () {
+                    context.pop();
+                  },
+                ),
+                CupertinoDialogAction(
+                  child: Text(permissionReq.confirmText ?? "确认"),
+                  onPressed: () {
+                    context.pop();
+                    // 跳着到设置界面
+                    openAppSettings().then((value) => null);
+                  },
+                )
+              ],
+            );
+          },
+        );
       }
       _onDenied(permissionReq.onDenied, isPermanentlyDenied);
     }

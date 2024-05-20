@@ -29,7 +29,7 @@ class SimpleWidget extends Container {
   @override
   Widget build(BuildContext context) {
     onBuild?.call();
-    if (onTap != null) {
+    if (onTap != null || onDoubleTap != null || onLongTap != null) {
       return GestureDetector(
         onTap: onTap,
         onDoubleTap: onDoubleTap,

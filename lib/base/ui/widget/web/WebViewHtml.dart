@@ -10,7 +10,11 @@ class WebView extends StatefulWidget {
   final WebController controller;
   final String firstUrl;
 
-  const WebView({super.key, required this.firstUrl, required this.controller});
+  const WebView({
+    super.key,
+    required this.firstUrl,
+    required this.controller,
+  });
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
@@ -99,7 +103,6 @@ class _WebViewState extends State<WebView> implements IWebViewFunction {
   @override
   Future<bool> loadUrl({required String url}) async {
     if (_iFrameElement != null) {
-      Log.d("onPageStarted..........");
       widget.controller.onPageStarted?.call(url, null);
       _iFrameElement!.src = url;
       return true;

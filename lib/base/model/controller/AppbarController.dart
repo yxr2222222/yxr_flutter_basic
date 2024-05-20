@@ -1,9 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:yxr_flutter_basic/base/config/ColorConfig.dart';
 import 'package:yxr_flutter_basic/base/model/controller/BaseGetxController.dart';
 
 class AppbarController extends BaseGetxController {
   // appbar 返回图标
   IconData? _appbarBackIcon = Icons.arrow_back_ios;
+
+  // appbar 返回图标
+  Color? _appbarBackIconColor;
+
+  /// appbar 标题
+  String? _appbarTitle;
+
+  /// appbar 右边操作控件列表
+  List<Widget>? _appbarActions;
+
+  bool _visible = true;
+
+  /// appbar 背景颜色
+  Color? _appbarBackgroundColor = Colors.white;
+
+  /// body 背景颜色
+  Color? _bodyColor;
+
+  // appbar elevation
+  double? _appbarElevation = 5;
 
   IconData? get appbarBackIcon => _appbarBackIcon;
 
@@ -12,9 +33,6 @@ class AppbarController extends BaseGetxController {
     update();
   }
 
-  // appbar 返回图标
-  Color? _appbarBackIconColor;
-
   Color? get appbarBackIconColor => _appbarBackIconColor;
 
   set appbarBackIconColor(Color? appbarBackIconColor) {
@@ -22,17 +40,12 @@ class AppbarController extends BaseGetxController {
     update();
   }
 
-  /// appbar 标题
-  String? _appbarTitle;
-
   String? get appbarTitle => _appbarTitle;
 
   set appbarTitle(String? appbarTitle) {
     _appbarTitle = appbarTitle;
     update();
   }
-
-  bool _visible = true;
 
   bool get visible => _visible;
 
@@ -52,18 +65,12 @@ class AppbarController extends BaseGetxController {
     update();
   }
 
-  /// appbar 背景颜色
-  Color? _appbarBackgroundColor = Colors.white;
-
   Color? get appbarBackgroundColor => _appbarBackgroundColor;
 
   set appbarBackgroundColor(Color? appbarBackgroundColor) {
     _appbarBackgroundColor = appbarBackgroundColor;
     update();
   }
-
-  // appbar elevation
-  double? _appbarElevation = 5;
 
   double? get appbarElevation => _appbarElevation;
 
@@ -72,13 +79,17 @@ class AppbarController extends BaseGetxController {
     update();
   }
 
-  /// appbar 右边操作控件列表
-  List<Widget>? _appbarActions;
-
   List<Widget>? get appbarActions => _appbarActions;
 
   set appbarActions(List<Widget>? appbarActions) {
     _appbarActions = appbarActions;
+    update();
+  }
+
+  Color? get bodyColor => _bodyColor;
+
+  set bodyColor(Color? value) {
+    _bodyColor = value;
     update();
   }
 }

@@ -16,6 +16,7 @@ class TabbarViewPager extends StatefulWidget {
   final bool canUserScroll;
   final PageController pageController;
   final ValueChanged<int>? onPageChanged;
+  final ScrollPhysics? physics;
   final Widget Function(BuildContext context, int index, String title)?
       onTabBuilder;
   final Widget Function(BuildContext context, int index) onPageBuilder;
@@ -36,28 +37,33 @@ class TabbarViewPager extends StatefulWidget {
   /// [canUserScroll] 用户是否可以手动滑动page进行page切换
   /// [onPageChanged] 页面切换监听
   /// [pageController] 页面切换控制器
-  TabbarViewPager(
-      {super.key,
-      required this.tabList,
-      required this.onPageBuilder,
-      this.onTabBuilder,
-      this.tabbarBackground = Colors.white,
-      this.tabbarWidth = double.infinity,
-      this.tabbarIsScrollable = true,
-      this.preNextPage = false,
-      this.tabbarIndicatorColor = Colors.blue,
-      this.dividerColor = Colors.transparent,
-      this.tabbarIndicatorSize = TabBarIndicatorSize.label,
-      this.tabbarLabelStyle = const TextStyle(
-          color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
-      this.tabbarUnselectedLabelStyle = const TextStyle(
-          color: ColorConfig.black_5c5c5c,
-          fontSize: 16,
-          fontWeight: FontWeight.normal),
-      this.canUserScroll = true,
-      PageController? pageController,
-      this.onPageChanged})
-      : pageController =
+  TabbarViewPager({
+    super.key,
+    required this.tabList,
+    required this.onPageBuilder,
+    this.onTabBuilder,
+    this.tabbarBackground = Colors.white,
+    this.tabbarWidth = double.infinity,
+    this.tabbarIsScrollable = true,
+    this.preNextPage = false,
+    this.tabbarIndicatorColor = Colors.blue,
+    this.dividerColor = Colors.transparent,
+    this.tabbarIndicatorSize = TabBarIndicatorSize.label,
+    this.tabbarLabelStyle = const TextStyle(
+      color: Colors.black,
+      fontSize: 16,
+      fontWeight: FontWeight.bold,
+    ),
+    this.tabbarUnselectedLabelStyle = const TextStyle(
+      color: ColorConfig.black_5c5c5c,
+      fontSize: 16,
+      fontWeight: FontWeight.normal,
+    ),
+    this.canUserScroll = true,
+    this.onPageChanged,
+    this.physics,
+    PageController? pageController,
+  }) : pageController =
             pageController ?? PageController(initialPage: 0, keepPage: true);
 
   @override
@@ -87,8 +93,10 @@ class _TabbarViewPagerState extends State<TabbarViewPager>
   void didUpdateWidget(covariant TabbarViewPager oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.tabList.length != widget.tabList.length) {
-      _tabController =
-          TabController(length: widget.tabList.length, vsync: this);
+      _tabController = TabController(
+        length: widget.tabList.length,
+        vsync: this,
+      );
     }
   }
 
@@ -100,41 +108,45 @@ class _TabbarViewPagerState extends State<TabbarViewPager>
           color: widget.tabbarBackground,
           width: widget.tabbarWidth,
           child: DefaultTabController(
-              length: widget.tabList.length,
-              child: TabBar(
-                dividerColor: Colors.transparent,
-                controller: _tabController,
-                isScrollable: widget.tabbarIsScrollable,
-                tabs: _buildTabs(context),
-                indicatorColor: widget.tabbarIndicatorColor,
-                indicatorSize: widget.tabbarIndicatorSize,
-                onTap: (index) {
-                  widget.pageController.jumpToPage(index);
-                },
-                labelColor: widget.tabbarLabelStyle.color,
-                labelStyle: widget.tabbarLabelStyle,
-                unselectedLabelColor: widget.tabbarUnselectedLabelStyle.color,
-                unselectedLabelStyle: widget.tabbarUnselectedLabelStyle,
-              )),
+            length: widget.tabList.length,
+            child: TabBar(
+              physics: widget.physics,
+              dividerColor: Colors.transparent,
+              controller: _tabController,
+              isScrollable: widget.tabbarIsScrollable,
+              tabs: _buildTabs(context),
+              indicatorColor: widget.tabbarIndicatorColor,
+              indicatorSize: widget.tabbarIndicatorSize,
+              onTap: (index) {
+                widget.pageController.jumpToPage(index);
+              },
+              labelColor: widget.tabbarLabelStyle.color,
+              labelStyle: widget.tabbarLabelStyle,
+              unselectedLabelColor: widget.tabbarUnselectedLabelStyle.color,
+              unselectedLabelStyle: widget.tabbarUnselectedLabelStyle,
+            ),
+          ),
         ),
         Divider(
           color: widget.dividerColor,
           height: 0.5,
         ),
         Expanded(
-            child: PageView.builder(
-                itemBuilder: (context, index) =>
-                    widget.onPageBuilder(context, index),
-                itemCount: widget.tabList.length,
-                controller: widget.pageController,
-                allowImplicitScrolling: widget.preNextPage,
-                physics: widget.canUserScroll
-                    ? null
-                    : const NeverScrollableScrollPhysics(),
-                onPageChanged: (index) {
-                  _tabController.index = index;
-                  widget.onPageChanged?.call(index);
-                }))
+          child: PageView.builder(
+            itemBuilder: (context, index) =>
+                widget.onPageBuilder(context, index),
+            itemCount: widget.tabList.length,
+            controller: widget.pageController,
+            allowImplicitScrolling: widget.preNextPage,
+            physics: widget.canUserScroll
+                ? null
+                : const NeverScrollableScrollPhysics(),
+            onPageChanged: (index) {
+              _tabController.index = index;
+              widget.onPageChanged?.call(index);
+            },
+          ),
+        ),
       ],
     );
   }

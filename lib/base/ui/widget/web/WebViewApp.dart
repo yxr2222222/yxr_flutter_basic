@@ -10,11 +10,12 @@ class WebView extends StatefulWidget {
   final String firstUrl;
   final Map<String, String> headers;
 
-  const WebView(
-      {super.key,
-      required this.firstUrl,
-      required this.controller,
-      this.headers = const <String, String>{}});
+  const WebView({
+    super.key,
+    required this.firstUrl,
+    required this.controller,
+    this.headers = const <String, String>{},
+  });
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
@@ -73,7 +74,7 @@ class _WebViewState extends State<WebView> implements IWebViewFunction {
 
   @override
   Future<bool> loadUrl({required String url}) async {
-    var uri = await widget.firstUrl.parseUri();
+    var uri = await url.parseUri();
     if (uri != null) {
       widget.controller.controller?.loadRequest(
         uri,

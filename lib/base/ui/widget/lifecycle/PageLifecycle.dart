@@ -27,8 +27,12 @@ class PageLifecycleListener {
   final OnLifecycle? onPause;
   final OnLifecycle? onDestroy;
 
-  PageLifecycleListener(
-      {this.onCreate, this.onResume, this.onPause, this.onDestroy});
+  PageLifecycleListener({
+    this.onCreate,
+    this.onResume,
+    this.onPause,
+    this.onDestroy,
+  });
 
   void onLifecycle(BuildContext context, OnLifecycle? onLifecycle) {
     if (onLifecycle != null) {

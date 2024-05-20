@@ -45,7 +45,7 @@ class DeviceUtil {
         uaType._isIos = true;
         uaType._isWechat = userAgent.contains("micromessenger");
       } else if (userAgent.contains("android")) {
-        uaType._isIos = true;
+        uaType._isAndroid = true;
         uaType._isWechat = userAgent.contains("micromessenger");
       } else if (userAgent.contains("midp") ||
           userAgent.contains("ucweb") ||

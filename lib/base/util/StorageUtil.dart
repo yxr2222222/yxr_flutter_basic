@@ -48,7 +48,7 @@ class StorageUtil {
   static Future<T?> get<T>(String key, {T? defaultValue}) async {
     if (_storage != null) {
       try {
-        return (await _storage!.get(key)) ?? defaultValue;
+        return (await _storage!.get<T>(key)) ?? defaultValue;
       } catch (e) {
         Log.w(e.toString());
       }

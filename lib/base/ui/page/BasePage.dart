@@ -17,7 +17,11 @@ abstract class BasePage extends StatefulWidget {
   /// 页面基础类
   /// [lazyCreate] 是否等第一帧绘制完成之后在走onCreate生命周期
   /// [isCanBackPressed] 是否支持返回事件
-  BasePage({super.key, this.lazyCreate = false, this.isCanBackPressed = true});
+  BasePage({
+    super.key,
+    this.lazyCreate = false,
+    this.isCanBackPressed = true,
+  });
 
   @override
   State<BasePage> createState();
@@ -46,22 +50,23 @@ abstract class BasePageState<VM extends BaseVM, T extends BasePage>
     this._viewModel.init(context, widget.lifecycle);
 
     this._detector = VisibilityDetector(
-        key: UniqueKey(),
-        // 内容控件交由子类自行实现
-        child: const SizedBox(
-          width: double.infinity,
-          height: double.infinity,
-        ),
-        // page可见性回调，用于处理page的onPause、onResume事件
-        onVisibilityChanged: (visibilityInfo) {
-          var visiblePercentage = visibilityInfo.visibleFraction * 100;
-          // double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-          if (visiblePercentage > 0) {
-            _onResume(false);
-          } else {
-            _onPause(false);
-          }
-        });
+      key: UniqueKey(),
+      // 内容控件交由子类自行实现
+      child: const SizedBox(
+        width: double.infinity,
+        height: double.infinity,
+      ),
+      // page可见性回调，用于处理page的onPause、onResume事件
+      onVisibilityChanged: (visibilityInfo) {
+        var visiblePercentage = visibilityInfo.visibleFraction * 100;
+        // double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+        if (visiblePercentage > 0) {
+          _onResume(false);
+        } else {
+          _onPause(false);
+        }
+      },
+    );
 
     // 添加第一次绘制完成监听
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -108,7 +113,8 @@ abstract class BasePageState<VM extends BaseVM, T extends BasePage>
     return widget.isCanBackPressed
         ? WillPopScope(
             child: _buildPageWidget(),
-            onWillPop: () => Future(() => viewModel.onBackPressed()))
+            onWillPop: () => Future(() => viewModel.onBackPressed()),
+          )
         : _buildPageWidget();
   }
 
@@ -291,14 +297,14 @@ abstract class BasePageState<VM extends BaseVM, T extends BasePage>
 
   /// 构建页面视图
   Widget _buildPageWidget() => Stack(
-        children: [
-          /// 添加可见性监听控件，用于处理page的onPause、onResume事件
-          _detector,
+    children: [
+      /// 添加可见性监听控件，用于处理page的onPause、onResume事件
+      _detector,
 
-          /// 页面内容视图
-          createContentWidget(context, viewModel)
-        ],
-      );
+      /// 页面内容视图
+      createContentWidget(context, viewModel)
+    ],
+  );
 }
 
 class _OnScreenSizeChangeOb extends WidgetsBindingObserver {

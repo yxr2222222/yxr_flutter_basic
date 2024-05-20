@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:yxr_flutter_basic/base/extension/ObjectExtension.dart';
 import 'package:yxr_flutter_basic/base/http/cache/CacheConfig.dart';
 import 'package:yxr_flutter_basic/base/http/cache/CacheManager.dart';
 import 'package:yxr_flutter_basic/base/http/cache/CacheMode.dart';
@@ -17,11 +16,6 @@ class HttpCacheInterceptor extends Interceptor {
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    // 因为使用的是sqflite本地存储方式，暂不支持web等其他版本
-    if (!isAndroid() && !isIOS()) {
-      return super.onRequest(options, handler);
-    }
-
     // 获取缓存模式
     CacheMode cacheMode = _getCacheMode(options);
     if (CacheMode.ONLY_NETWORK == cacheMode ||
@@ -45,11 +39,6 @@ class HttpCacheInterceptor extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) async {
-    // 因为使用的是sqflite本地存储方式，暂不支持web等其他版本
-    if (!isAndroid() && !isIOS()) {
-      return super.onResponse(response, handler);
-    }
-
     var options = response.requestOptions;
 
     // 获取缓存模式
@@ -60,18 +49,15 @@ class HttpCacheInterceptor extends Interceptor {
     }
 
     // 如果缓存模式是优先缓存，则先校验缓存
-    await CacheManager.getInstance()
-        .putCacheWithResp(response, cacheConfig.defaultCacheTime);
+    await CacheManager.getInstance().putCacheWithResp(
+      response,
+      cacheConfig.defaultCacheTime,
+    );
     return super.onResponse(response, handler);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    // 因为使用的是sqflite本地存储方式，暂不支持web等其他版本
-    if (!isAndroid() && !isIOS()) {
-      return super.onError(err, handler);
-    }
-
     var options = err.requestOptions;
     // 获取缓存模式
     CacheMode cacheMode = _getCacheMode(options);
@@ -98,9 +84,10 @@ class HttpCacheInterceptor extends Interceptor {
       },
     );
     return Response(
-        data: utf8.encode(obj.cacheValue),
-        requestOptions: options,
-        statusCode: 200);
+      data: utf8.encode(obj.cacheValue),
+      requestOptions: options,
+      statusCode: 200,
+    );
   }
 
   /// 获取缓存类型

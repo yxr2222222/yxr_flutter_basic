@@ -3,6 +3,7 @@ import 'package:get/get_state_manager/src/simple/list_notifier.dart';
 import 'package:yxr_flutter_basic/base/model/controller/BaseGetxController.dart';
 import 'package:yxr_flutter_basic/base/ui/page/BaseMultiStatePage.dart';
 
+import '../../config/ColorConfig.dart';
 import '../../vm/BaseMultiVM.dart';
 
 abstract class BasePageViewPage extends BaseMultiPage {
@@ -27,6 +28,7 @@ abstract class BasePageViewPage extends BaseMultiPage {
     super.isNeedScaffold = false,
     super.extendBodyBehindAppBar = false,
     super.resizeToAvoidBottomInset = false,
+    super.bodyColor = ColorConfig.white_f2f2f2,
     required this.pageIndex,
     required this.keepAliveController,
   });

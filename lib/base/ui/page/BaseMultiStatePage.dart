@@ -4,6 +4,7 @@ import 'package:yxr_flutter_basic/base/config/ColorConfig.dart';
 import 'package:yxr_flutter_basic/base/model/controller/AppbarController.dart';
 import 'package:yxr_flutter_basic/base/model/controller/ViewStateController.dart';
 import 'package:yxr_flutter_basic/base/model/em/ViewState.dart';
+import 'package:yxr_flutter_basic/base/ui/decoration/SimpleShapeDecoration.dart';
 import 'package:yxr_flutter_basic/base/ui/widget/SimpleWidget.dart';
 
 import '../../util/GetBuilderUtil.dart';
@@ -80,19 +81,36 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
             )
           : _buildBodyWidget();
 
-  Widget _buildBodyWidget() => Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(color: widget.bodyColor),
-        child: GetBuilderUtil.builder(
-          (controller) => _buildWidget(context, viewModel, controller),
-          init: viewModel.stateController,
-        ),
+  Widget _buildBodyWidget() => Stack(
+        children: [
+          /// 背景颜色
+          GetBuilderUtil.builder(
+            (controller) => Container(
+              width: double.infinity,
+              height: double.infinity,
+              color: controller.bodyColor ?? widget.bodyColor,
+            ),
+            init: viewModel.appbarController,
+          ),
+
+          /// body
+          SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: GetBuilderUtil.builder(
+              (controller) => _buildWidget(context, viewModel, controller),
+              init: viewModel.stateController,
+            ),
+          ),
+        ],
       );
 
   /// 根据不同状态来显示不同的视图
   Widget _buildWidget(
-      BuildContext context, VM viewModel, ViewStateController controller) {
+    BuildContext context,
+    VM viewModel,
+    ViewStateController controller,
+  ) {
     switch (controller.viewState) {
       case ViewState.error:
         _errorView ??= createErrorView(context, viewModel, controller);
@@ -143,38 +161,39 @@ abstract class BaseMultiPageState<VM extends BaseMultiVM,
   /// 创建Loading视图，子类可override自定义
   @protected
   Widget createLoadingView(
-      BuildContext context, VM viewModel, ViewStateController controller) {
-    return SizedBox(
-        width: double.infinity,
-        height: double.infinity,
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                alignment: Alignment.center,
-                child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(
-                            width: 32,
-                            height: 32,
-                            child: CircularProgressIndicator()),
-                        Visibility(
-                            visible: controller.hintTxt != null,
-                            child: Container(
-                              margin: const EdgeInsets.only(top: 16),
-                              child: Text(
-                                controller.hintTxt ?? "",
-                                style: const TextStyle(
-                                    fontSize: 14, color: Color(0xff5c5c5c)),
-                              ),
-                            ))
-                      ],
-                    )),
-              )
-            ]));
+    BuildContext context,
+    VM viewModel,
+    ViewStateController controller,
+  ) {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+            ),
+          ),
+          Visibility(
+              visible: controller.hintTxt != null,
+              child: Container(
+                margin: const EdgeInsets.only(top: 16),
+                child: Text(
+                  controller.hintTxt ?? "",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Color(0xff5c5c5c),
+                  ),
+                ),
+              ))
+        ],
+      ),
+    );
   }
 
   /// 创建错误视图，子类可override自定义

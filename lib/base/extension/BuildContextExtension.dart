@@ -11,12 +11,16 @@ extension BuildContextExtension on BuildContext {
   /// 页面退出，dialog的dismiss
   /// [cantPopExit] 如果不可pop的时候是否退出当前APP，默认是true
   void pop<T extends Object?>({T? result, bool cantPopExit = true}) {
-    if (isUseful()) {
-      if (Navigator.canPop(this)) {
-        Navigator.pop(this, result);
-      } else if (cantPopExit) {
-        SystemNavigator.pop();
+    try {
+      if (isUseful()) {
+        if (Navigator.canPop(this)) {
+          Navigator.pop(this, result);
+        } else if (cantPopExit) {
+          SystemNavigator.pop();
+        }
       }
+    } catch (e) {
+      Log.d("pop发生异常", error: e);
     }
   }
 
@@ -31,12 +35,22 @@ extension BuildContextExtension on BuildContext {
               CupertinoPageRoute(builder: (context) => page), (route) => false);
         } catch (e) {
           Log.d("pushAndRemoveUntil发生异常", error: e);
-          return Navigator.of(this)
-              .push(CupertinoPageRoute(builder: (context) => page));
+          try {
+            return Navigator.of(this).push(
+              CupertinoPageRoute(builder: (context) => page),
+            );
+          } catch (e) {
+            Log.d("push发生异常", error: e);
+          }
         }
       } else {
-        return Navigator.of(this)
-            .push(CupertinoPageRoute(builder: (context) => page));
+        try {
+          return Navigator.of(this).push(
+            CupertinoPageRoute(builder: (context) => page),
+          );
+        } catch (e) {
+          Log.d("push发生异常", error: e);
+        }
       }
     }
     return null;
@@ -46,8 +60,11 @@ extension BuildContextExtension on BuildContext {
   /// [url] 需要加载的url地址
   /// [title] appbar的标题
   /// [webClientIframe] 如果是web端是否是用内置iframe展示，默认为false
-  void pushSimpleWeb(
-      {required String url, String? title, bool webClientIframe = false}) {
+  void pushSimpleWeb({
+    required String url,
+    String? title,
+    bool webClientIframe = false,
+  }) {
     if (!webClientIframe && isWeb()) {
       url.launch();
     } else {
@@ -67,16 +84,17 @@ extension BuildContextExtension on BuildContext {
     bool useSafeArea = false,
   }) {
     showDialog(
-        context: this,
-        useSafeArea: useSafeArea,
-        barrierColor: barrierColor,
-        barrierDismissible: barrierDismissible,
-        builder: (context) {
-          return WillPopScope(
-            onWillPop: () async => cancelable,
-            child: builder(context),
-          );
-        });
+      context: this,
+      useSafeArea: useSafeArea,
+      barrierColor: barrierColor,
+      barrierDismissible: barrierDismissible,
+      builder: (context) {
+        return WillPopScope(
+          onWillPop: () async => cancelable,
+          child: builder(context),
+        );
+      },
+    );
   }
 
   /// 展示简易的提示弹框
@@ -99,36 +117,42 @@ extension BuildContextExtension on BuildContext {
     void Function()? onCancel,
   }) {
     showCupertinoDialog(
-        context: this,
-        builder: (BuildContext context) {
-          return CupertinoAlertDialog(
-              title: Text(title ?? ""),
-              content: Text(content ?? ""),
-              actions: [
-                CupertinoDialogAction(
-                    child: Text(
-                      cancelTxt ?? "取消",
-                      style: TextStyle(
-                        color: cancelTextColor ?? ColorConfig.gray_999999,
-                        fontSize: 16,
-                      ),
-                    ),
-                    onPressed: () {
-                      context.pop();
-                      onCancel?.call();
-                    }),
-                CupertinoDialogAction(
-                    child: Text(confirmTxt ?? "确认",
-                        style: TextStyle(
-                          color: cancelTextColor ?? Colors.blue,
-                          fontSize: 16,
-                        )),
-                    onPressed: () {
-                      context.pop();
-                      onConfirm?.call();
-                    })
-              ]);
-        });
+      context: this,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text(title ?? ""),
+          content: Text(content ?? ""),
+          actions: [
+            CupertinoDialogAction(
+              child: Text(
+                cancelTxt ?? "取消",
+                style: TextStyle(
+                  color: cancelTextColor ?? ColorConfig.gray_999999,
+                  fontSize: 16,
+                ),
+              ),
+              onPressed: () {
+                context.pop();
+                onCancel?.call();
+              },
+            ),
+            CupertinoDialogAction(
+              child: Text(
+                confirmTxt ?? "确认",
+                style: TextStyle(
+                  color: cancelTextColor ?? Colors.blue,
+                  fontSize: 16,
+                ),
+              ),
+              onPressed: () {
+                context.pop();
+                onConfirm?.call();
+              },
+            )
+          ],
+        );
+      },
+    );
   }
 
   /// 获取屏幕宽度
@@ -141,7 +165,5 @@ extension BuildContextExtension on BuildContext {
   double getStatusHeight() => MediaQuery.of(this).padding.top;
 
   /// 当前context是否可用（mounted）
-  bool isUseful() {
-    return mounted;
-  }
+  bool isUseful() => mounted;
 }
