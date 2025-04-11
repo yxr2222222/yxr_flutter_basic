@@ -7,7 +7,7 @@ Flutter基础框架package项目，框架整体采用Getx+MVVM模式。内部封
    ```yaml
    dependencies:
       # 集成yxr_flutter_basic依赖
-      yxr_flutter_basic: ^0.2.2
+      yxr_flutter_basic: ^0.2.3
       # 集成yxr_flutter_basic内部使用到的依赖
       fluttertoast: ^8.2.2
       device_info_plus: ^9.1.0

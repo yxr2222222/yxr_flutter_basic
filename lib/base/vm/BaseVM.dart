@@ -25,7 +25,7 @@ abstract class BaseVM {
   OnDismissLoading? onDismissLoading;
   final List<BaseApi> _apiList = [];
   final List<CancelToken> _downloadCancelTokens = [];
-  Timer? _delayCreate;
+  final List<Timer> timers = [];
 
   void init(BuildContext context, PageLifecycle pageLifecycle) {
     _context = context;
@@ -40,7 +40,7 @@ abstract class BaseVM {
 
   /// onCreate生命周期
   void onCreate() {
-    _delayCreate = Timer(getDelayCreateDuration(), () {
+    createLifecycleTimer(getDelayCreateDuration(), () {
       onDelayCreate();
     });
   }
@@ -53,8 +53,10 @@ abstract class BaseVM {
 
   /// onDestroy生命周期
   void onDestroy() {
-    _delayCreate?.cancel();
-    _delayCreate = null;
+    for (var element in timers) {
+      element.cancel();
+    }
+    timers.clear();
 
     _context = null;
     onShowLoading = null;
@@ -83,7 +85,7 @@ abstract class BaseVM {
   /// [page] 需要跳转的页面
   /// [finishCurr] 是否需要结束当前页面，注意确认当前页面是否可退出
   Future<T?> push<T>(Widget page, {bool finishCurr = false}) async {
-    return context == null ? null : context!.push(page, finishCurr: finishCurr);
+    return context?.push(page, finishCurr: finishCurr);
   }
 
   /// 展示toast
@@ -281,10 +283,12 @@ abstract class BaseVM {
     return api;
   }
 
+  /// 根据MultiString获取字符串
   String getString(MultiString multiString) {
     return multiString.getString(context);
   }
 
+  /// 展示输入法
   void showKeyboard(FocusNode focusNode) {
     try {
       if (context?.mounted == true) {
@@ -295,6 +299,7 @@ abstract class BaseVM {
     }
   }
 
+  /// 隐藏输入法
   void hideKeyboard() {
     try {
       if (context?.mounted == true) {
@@ -315,7 +320,7 @@ abstract class BaseVM {
   void onDelayCreate() {}
 
   /// 检查是走成功还是失败回调
-  _checkSuccessFailed<T>(
+  void _checkSuccessFailed<T>(
       BaseResp<T> resp, OnSuccess<T>? onSuccess, OnFailed? onFailed) {
     if (resp.isSuccess) {
       _onSuccess(onSuccess, resp.data);
@@ -338,6 +343,16 @@ abstract class BaseVM {
       onFailed(exception);
     }
     HttpManager.getInstance().onGlobalFailed?.call(exception, context);
+  }
+
+  /// 创建具备ViewModel生周期自动销毁的Timer
+  Timer createLifecycleTimer(
+    Duration duration,
+    void Function() callback,
+  ) {
+    var timer = Timer(duration, callback);
+    timers.add(timer);
+    return timer;
   }
 }
 

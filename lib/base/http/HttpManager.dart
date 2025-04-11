@@ -99,6 +99,9 @@ class HttpManager {
     return true;
   }
 
+
+  Map<String, dynamic> get publicHeaders => _publicHeaders;
+
   /// 清空当前请求头
   void clearPublicHeader() {
     _publicHeaders.clear();

@@ -53,10 +53,24 @@ class EncrypterUtil {
   /// rsa加密
   /// [publicKey] rsa 公钥
   /// [data] 需要加密的内容
-  static String? rsaEncrypt(String publicKey, String data) {
+  static String? rsaEncrypt(String publicKey, String data ) {
     try {
       RSAPublicKey key = RSAKeyParser().parse(publicKey) as RSAPublicKey;
       var encrypter = Encrypter(RSA(publicKey: key));
+      var encrypted = encrypter.encrypt(data);
+      return encrypted.base64;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// rsa加密
+  /// [privateKey] rsa私钥
+  /// [data] 需要加密的内容
+  static String? rsaPrivateEncrypt(String privateKey, String data ) {
+    try {
+      RSAPrivateKey key = RSAKeyParser().parse(privateKey) as RSAPrivateKey;
+      var encrypter = Encrypter(RSA(privateKey: key));
       var encrypted = encrypter.encrypt(data);
       return encrypted.base64;
     } catch (e) {
@@ -73,6 +87,25 @@ class EncrypterUtil {
 
       AsymmetricBlockCipher cipher = PKCS1Encoding(RSAEngine());
       cipher.init(false, PublicKeyParameter<RSAPublicKey>(key));
+
+      List<int> sourceBytes = base64Decode(data);
+      var process = cipher.process(Uint8List.fromList(sourceBytes));
+
+      return utf8.decode(process);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// rsa解密
+  /// [privateKey] rsa 私钥
+  /// [data] 需要解密的base64内容
+  static String? rsaPrivateDecrypt(String privateKey, String data) {
+    try {
+      RSAPrivateKey key = RSAKeyParser().parse(privateKey) as RSAPrivateKey;
+
+      AsymmetricBlockCipher cipher = PKCS1Encoding(RSAEngine());
+      cipher.init(false, PrivateKeyParameter<RSAPrivateKey>(key));
 
       List<int> sourceBytes = base64Decode(data);
       var process = cipher.process(Uint8List.fromList(sourceBytes));
@@ -105,6 +138,28 @@ class EncrypterUtil {
     }
   }
 
+  /// AES+RSA混合解密
+  /// [aesKey] 长度为32的AES的密钥
+  /// [privateKey] Rsa的私钥
+  /// [data] 需要加密的内容
+  static Map<String, String>? aesRsaPrivateEncrypt(
+      String aesKey,
+      String privateKey,
+      String data,
+      ) {
+    try {
+      var encryptData = aesEncrypt(aesKey, data);
+      if (encryptData == null) return null;
+
+      var encryptAesKey = rsaPrivateEncrypt(privateKey, aesKey);
+      if (encryptAesKey == null) return null;
+
+      return {"key": encryptAesKey, "data": encryptData};
+    } catch (e) {
+      return null;
+    }
+  }
+
   /// AES+RSA混合加密
   /// [aesKey] 加密之后的aes的key
   /// [publicKey] Rsa的公钥
@@ -116,6 +171,26 @@ class EncrypterUtil {
   ) {
     try {
       var aesKey = rsaDecrypt(publicKey, aesEncryptKey);
+      if (aesKey == null) return null;
+
+      var decryptData = aesDecrypt(aesKey, data);
+      return decryptData;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// AES+RSA混合加密
+  /// [aesKey] 加密之后的aes的key
+  /// [privateKey] Rsa的私钥
+  /// [data] 需要解密的内容
+  static String? aesRsaPrivateDecrypt(
+      String aesEncryptKey,
+      String privateKey,
+      String data,
+      ) {
+    try {
+      var aesKey = rsaPrivateDecrypt(privateKey, aesEncryptKey);
       if (aesKey == null) return null;
 
       var decryptData = aesDecrypt(aesKey, data);
